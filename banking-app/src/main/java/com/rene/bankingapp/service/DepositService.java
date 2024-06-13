@@ -4,7 +4,6 @@ import com.rene.bankingapp.domain.Deposit;
 import com.rene.bankingapp.repository.DepositRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +14,7 @@ public class DepositService {
 
     public ResponseEntity<Iterable<Deposit>> getAllDepositsByAccount(Long accountId){
 
-        //logic for getting all deposits by account
+        // get all deposits logic
 
         return ResponseEntity<>;
     }
@@ -35,7 +34,7 @@ public class DepositService {
         return ResponseEntity<>;
     }
 
-    public ResponseEntity<?> updateADeposit(Long depositId, Deposit updateDeposit) {
+    public ResponseEntity<?> updateADeposit(Long depositId, Deposit depositToUpdateWith) {
 
         //update deposit logic
 

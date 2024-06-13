@@ -5,6 +5,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.lang.NonNull;
 
 @Entity
@@ -13,28 +16,36 @@ public class Deposit {
 
     @Id
     @GeneratedValue
+    @NotNull
     @Column(name="deposit_id")
     private Long depositId;
 
     @Column(name="deposit_type")
+    @NotEmpty
     private String type;
 
     @Column(name="transaction_date")
+    @NotEmpty
     private String transactionDate;
 
     @Column(name="deposit_status")
+    @NotEmpty
     private String status;
 
     @Column(name="deposit_payee_id")
     private Long payee_id;
 
     @Column(name="deposit_medium")
+    @NotEmpty
     private String medium;
 
     @Column(name="deposit_amount")
+    @NotEmpty
+    @Positive
     private Double amount;
 
     @Column(name="deposit_description")
+    @NotEmpty
     private String description;
 
 

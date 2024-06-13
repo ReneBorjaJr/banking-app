@@ -2,12 +2,17 @@ package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Deposit;
 import com.rene.bankingapp.service.DepositService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Validated
 public class DepositController {
 
     @Autowired
@@ -28,7 +33,7 @@ public class DepositController {
 
 
     @PostMapping("/accounts/{accountId}/deposits")
-    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, DepositType depositType, @RequestParam(required = false) Long payee_id, DepositMedium depositMedium, Double depositAmount, @RequestParam(required = false, defaultValue = "No description given.") String depositDescription){
+    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @NotNull DepositType depositType, @RequestParam(required = false) Long payee_id, @NotNull DepositMedium depositMedium, @Positive @NotNull Double depositAmount, @RequestParam(required = false, defaultValue = "No description given.") String depositDescription){
 
         return depositService.createTheDeposit(accountId, depositType, payee_id, depositMedium, depositAmount, depositDescription);
     }
@@ -36,8 +41,8 @@ public class DepositController {
 
 
     @PutMapping("/deposits/{depositId}")
-    public ResponseEntity<?> updateDeposit(@PathVariable Long depositId, Deposit updateDeposit){
-        return depositService.updateADeposit(depositId, updateDeposit);
+    public ResponseEntity<?> updateDeposit(@PathVariable Long depositId, @Valid Deposit depositToUpdateWith){
+        return depositService.updateADeposit(depositId, depositToUpdateWith);
     }
 
 
