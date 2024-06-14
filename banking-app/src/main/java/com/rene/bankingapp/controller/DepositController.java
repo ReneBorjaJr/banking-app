@@ -1,6 +1,8 @@
 package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Deposit;
+import com.rene.bankingapp.domain.enums.Medium;
+import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.service.DepositService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +38,7 @@ public class DepositController {
 
 
     @PostMapping("/accounts/{accountId}/deposits")
-    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @NotNull DepositType depositType, @RequestParam(required = false) Long payee_id, @NotNull DepositMedium depositMedium, @Positive @NotNull Double depositAmount, @RequestParam(required = false, defaultValue = "No description given.") String depositDescription){
+    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @NotNull TransactionType depositType, @RequestParam(required = false) Long payee_id, @NotNull Medium depositMedium, @Positive @NotNull Double depositAmount, @RequestParam(required = false, defaultValue = "No description given.") String depositDescription){
 
         return depositService.createTheDeposit(accountId, depositType, payee_id, depositMedium, depositAmount, depositDescription);
 

@@ -1,13 +1,19 @@
 package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Deposit;
+import com.rene.bankingapp.domain.enums.Medium;
+import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.exception.ResourceNotFoundException;
 import com.rene.bankingapp.repository.DepositRepository;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 public class DepositService {
 
     @Autowired
@@ -39,8 +45,9 @@ public class DepositService {
         return ResponseEntity<>;
     }
 
-    public ResponseEntity<?> createTheDeposit(Long accountId, DepositType depositType, Long payeeId, DepositMedium depositMedium, Double depositAmount, String depositDescription) {
+    public ResponseEntity<?> createTheDeposit(Long accountId, TransactionType depositType, Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription) {
 
+        // validate that medium is not withdraw
 
         // validate that account exists
 
@@ -82,8 +89,15 @@ public class DepositService {
 
     }
 
+    public void verifyNotWithdraw(TransactionType transactionType){
+
+        // throw TransactionMismatchException or something
+    }
+
+
+
     // Process Transaction Methods
-    public ResponseEntity<?> processDepositTransaction(Long accountId, DepositMedium depositMedium, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> processDepositTransaction(Long accountId, @Null Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
 
         // check deposit medium
             // if Balance medium
@@ -91,6 +105,17 @@ public class DepositService {
 
             // if Points medium
                 // make Points deposit
+
+        return ResponseEntity<>;
+    }
+
+    public ResponseEntity<?> processP2pTransaction(Long accountId, @NotNull Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
+
+        // validate payeeId
+
+        // validate that deposit medium is not rewards, if so, throw new MediumMismatch error
+
+        // make p2p deposit
 
         return ResponseEntity<>;
     }
@@ -110,23 +135,43 @@ public class DepositService {
         return ResponseEntity<>;
     }
 
+    public ResponseEntity<?> createRewardsDeposit(Long accountId, Double depositAmount, String depositDescription){
+
+        // create new Deposit object
+
+        // set values of object
+
+        // save object to repo and store method call as a new Deposit object
+
+        // process deposit
+
+        return ResponseEntity<>;
+    }
+
+    public ResponseEntity<?> createP2pDeposit(Long accountId, Long payeeId, Double depositAmount, String depositDescription){
+
+        // create new Deposit object
+
+        // set values of object
+
+        // save object to repo and store method call as a new Deposit object
+
+        // process deposit
+
+        return ResponseEntity<>;
+    }
+
 
     // Process Deposit Methods
 
-    public ResponseEntity<?> processDeposit(Deposit deposit){
-
-
-        // get deposit id from deposit object and make sure it exists
-
-        // check deposit status
-
-        // if status is pending
+    public ResponseEntity<?> processDepositByDeposit(Deposit deposit){
 
             // get account id from deposit
             // get transactionType
 
                 // if p2p
-                    // validate that payee account still exists
+                    // validate that payee and payer account still exist
+                    // check that payer balance >= deposit amount, if not throw InsufficientFundsException
                     // add depositAmount to payee account balance
                     // update deposit status
 
