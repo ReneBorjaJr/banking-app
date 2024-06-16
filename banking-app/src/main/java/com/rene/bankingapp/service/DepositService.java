@@ -3,7 +3,7 @@ package com.rene.bankingapp.service;
 import com.rene.bankingapp.domain.Deposit;
 import com.rene.bankingapp.domain.enums.Medium;
 import com.rene.bankingapp.domain.enums.TransactionType;
-import com.rene.bankingapp.exception.ResourceNotFoundException;
+import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.repository.DepositRepository;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;

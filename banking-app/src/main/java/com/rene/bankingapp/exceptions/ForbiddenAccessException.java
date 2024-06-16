@@ -1,4 +1,4 @@
-package com.rene.bankingapp.exception;
+package com.rene.bankingapp.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
