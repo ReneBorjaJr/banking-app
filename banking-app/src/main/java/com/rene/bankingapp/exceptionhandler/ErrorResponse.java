@@ -1,6 +1,4 @@
-package com.rene.bankingapp.exception;
-
-import java.time.LocalDateTime;
+package com.rene.bankingapp.exceptionhandler;
 
 public class ErrorResponse {
 
