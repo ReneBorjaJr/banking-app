@@ -14,6 +14,7 @@ public class WithdrawalController {
     @Autowired
     private WithdrawalService withdrawalService;
 
+
     @GetMapping(value="/accounts/{accountId}/withrdawals")
     public ResponseEntity<Iterable<Withdrawal>> getAllWithdrawals() {
         Iterable<Withdrawal> withdrawals = withdrawalService.getAllWithdrawals();
@@ -26,12 +27,12 @@ public class WithdrawalController {
     }
     @PostMapping(value="/accounts/{accountId}/withdrawals")
     public ResponseEntity<?> createWithdrawal(@RequestBody Withdrawal withdrawal) {
-        withdrawal = withdrawalService.save(withdrawal);
+        withdrawal = withdrawalService.createWithdrawal(withdrawal);
         return new ResponseEntity<>(null, HttpStatus.CREATED);
     }
     @PutMapping(value="/polls/{pollId}")
     public ResponseEntity<?> updateWithdrawal(@RequestBody Withdrawal withdrawal, @PathVariable Long withdrawalId) {
-        Withdrawal w = withdrawalService.save(withdrawal);
+        Withdrawal w = withdrawalService.createWithdrawal(withdrawal);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping(value="/withdrawals/{withdrawalId}")

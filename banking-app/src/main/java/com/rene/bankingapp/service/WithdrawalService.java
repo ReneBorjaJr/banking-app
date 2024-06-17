@@ -15,7 +15,8 @@ public class WithdrawalService {
     public Optional<Withdrawal> getWithdrawal(Long ID){
         return withdrawalRepository.findById(ID);
     }
-    public Withdrawal save(Withdrawal withdrawal){
+    public Withdrawal createWithdrawal(Withdrawal withdrawal){
+
         return withdrawalRepository.save(withdrawal);
     }
     public void delete(Long ID){
