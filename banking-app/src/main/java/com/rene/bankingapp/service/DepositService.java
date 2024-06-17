@@ -13,6 +13,8 @@ import com.rene.bankingapp.repository.DepositRepository;
 import com.rene.bankingapp.successfulresponse.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import java.util.Optional;
 @Service
 @Validated
 public class DepositService {
+
+    private static final Logger log = LoggerFactory.getLogger(DepositService.class);
 
     @Autowired
     private DepositRepository depositRepository;
@@ -46,7 +50,9 @@ public class DepositService {
 
         allDeposits.forEach(listForResponse::add);
 
-        ApiResponse<?> apiResponse = new ApiResponse<>(200, listForResponse);
+        ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
+
+
 
         // populate the response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -66,7 +72,7 @@ public class DepositService {
         List<Deposit> listForResponse = new ArrayList<>();
         Deposit deposit = depositOptional.get();
         listForResponse.add(deposit);
-        ApiResponse<?> apiResponse = new ApiResponse<>(200, listForResponse);
+        ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
 
 
         // populate the response entity
