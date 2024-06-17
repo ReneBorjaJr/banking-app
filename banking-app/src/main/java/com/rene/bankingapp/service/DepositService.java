@@ -100,7 +100,7 @@ public class DepositService {
 
         //update deposit logic
 
-        return ResponseEntity<>;
+        return new ResponseEntity<>;
     }
 
     public ResponseEntity<?> deleteADeposit(Long depositId) {
@@ -347,6 +347,10 @@ public class DepositService {
 
             accountRepository.save(payerAccount);
 
+            // update deposit status
+            deposit.setStatus("Completed");
+            depositRepository.save(deposit);
+
         } else {
             // if Deposit
             // add deposit amount based on medium type to account balance
@@ -360,10 +364,11 @@ public class DepositService {
 
             accountRepository.save(account);
 
+            // update deposit status
+            deposit.setStatus("Completed");
+            depositRepository.save(deposit);
         }
-        // update deposit status
-        deposit.setStatus("Completed");
-        deposit = depositRepository.save(deposit);
+
 
     }
 
