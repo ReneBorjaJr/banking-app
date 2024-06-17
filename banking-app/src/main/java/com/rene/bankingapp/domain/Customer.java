@@ -1,6 +1,6 @@
 package com.rene.bankingapp.domain;
 
-import com.rene.bankingapp.Address;
+import com.rene.bankingapp.domain.Address;
 import jakarta.persistence.*;
 
 import java.util.Set;
