@@ -10,13 +10,17 @@ import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.exceptions.TransactionMismatchException;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.repository.DepositRepository;
+import com.rene.bankingapp.successfulresponse.ApiResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,7 +33,7 @@ public class DepositService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public ResponseEntity<Iterable<Deposit>> getAllDepositsByAccount(Long accountId){
+    public ResponseEntity<?> getAllDepositsByAccount(Long accountId){
 
         // verify account exists
         verifyAccountExists(accountId);
@@ -38,11 +42,15 @@ public class DepositService {
         Iterable<Deposit> allDeposits = depositRepository.findAllByAccountId(accountId);
 
         // generate a Successful response object and store relevant data in it
+        List<Deposit> listForResponse = new ArrayList<>();
 
+        allDeposits.forEach(listForResponse::add);
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(200, listForResponse);
 
         // populate the response entity
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-        return ResponseEntity<>;
     }
 
     public ResponseEntity<?> getADepositById(Long depositId) {
@@ -51,14 +59,19 @@ public class DepositService {
         verifyDepositExists(depositId);
 
         // write code that returns the deposit
-        Optional<Deposit> deposit = depositRepository.findById(depositId);
+        Optional<Deposit> depositOptional = depositRepository.findById(depositId);
 
 
         // generate a successful response object and store relevant data in it
+        List<Deposit> listForResponse = new ArrayList<>();
+        Deposit deposit = depositOptional.get();
+        listForResponse.add(deposit);
+        ApiResponse<?> apiResponse = new ApiResponse<>(200, listForResponse);
+
 
         // populate the response entity
 
-        return ResponseEntity<>;
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
     public ResponseEntity<?> createTheDeposit(Long accountId, TransactionType depositType, Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription) {
@@ -96,7 +109,7 @@ public class DepositService {
         verifyDepositExists(depositId);
         accountRepository.deleteById(depositId);
 
-        return ResponseEntity<>;
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Verify Methods
@@ -203,7 +216,16 @@ public class DepositService {
         deposit = depositRepository.save(deposit);
 
         // process deposit
-        return processDepositByDeposit(deposit);
+        processDepositByDeposit(deposit);
+
+        // return created response entity
+        List<Deposit> listForResponse = new ArrayList<>();
+        listForResponse.add(deposit);
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+        //return response entity
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
 
     }
 
@@ -227,7 +249,16 @@ public class DepositService {
         deposit = depositRepository.save(deposit);
 
         // process deposit
-        return processDepositByDeposit(deposit);
+        processDepositByDeposit(deposit);
+
+        // return created response entity
+        List<Deposit> listForResponse = new ArrayList<>();
+        listForResponse.add(deposit);
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+        //return response entity
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
 
     }
 
@@ -252,13 +283,23 @@ public class DepositService {
         deposit = depositRepository.save(deposit);
 
         // process deposit
-        return processDepositByDeposit(deposit);
+        processDepositByDeposit(deposit);
+
+        // return created response entity
+        List<Deposit> listForResponse = new ArrayList<>();
+        listForResponse.add(deposit);
+
+        ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+        //return response entity
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+
     }
 
 
     // Process Deposit Methods
 
-    public ResponseEntity<?> processDepositByDeposit(Deposit deposit){
+    public void processDepositByDeposit(Deposit deposit){
 
             // get account id from deposit
             Long accountId = deposit.getAccount().getId();
@@ -306,13 +347,6 @@ public class DepositService {
 
             accountRepository.save(payerAccount);
 
-            // update deposit status
-
-            deposit.setStatus("Completed");
-            deposit = depositRepository.save(deposit);
-
-            return ResponseEntity <>;
-
         } else {
             // if Deposit
             // add deposit amount based on medium type to account balance
@@ -326,13 +360,11 @@ public class DepositService {
 
             accountRepository.save(account);
 
-            // update deposit status
-
-            deposit.setStatus("Completed");
-            deposit = depositRepository.save(deposit);
-
-            return ResponseEntity<>;
         }
+        // update deposit status
+        deposit.setStatus("Completed");
+        deposit = depositRepository.save(deposit);
+
     }
 
 
