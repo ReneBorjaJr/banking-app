@@ -1,4 +1,8 @@
 package com.rene.bankingapp.repository;
 
-public interface CustomerRepository {
-}
+import com.rene.bankingapp.domain.Customer;
+import org.springframework.data.repository.CrudRepository;
+
+public interface CustomerRepository extends CrudRepository<Customer, Long> {
+    }
+
