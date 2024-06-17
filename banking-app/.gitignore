@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+banking-app/src/main/resources/application.properties
 
 
 ### STS ###
