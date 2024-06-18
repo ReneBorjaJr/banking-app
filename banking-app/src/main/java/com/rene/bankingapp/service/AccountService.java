@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -52,4 +53,29 @@ public class AccountService {
         responseHeaders.setLocation(newAccountUri);
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
+
+    public ResponseEntity<?> updateAccount(@RequestBody Account account) {
+        verifyaccount(account.getId());
+        // Save the entity
+        Account a = accountRepository.save(account);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    public ResponseEntity<?> deleteAccount(@PathVariable Long accountId) {
+        verifyaccount(accountId);
+        accountRepository.deleteById(accountId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    protected void verifyAccount(Long accountId) throws ResourceNotFoundException {
+        Optional<Account> account = accountRepository.findById(accountId);
+        if(account.isEmpty()) {
+            throw new ResourceNotFoundException("Poll with id " + accountId + " not found");
+        }
+
+    }
+
+
+
 }
