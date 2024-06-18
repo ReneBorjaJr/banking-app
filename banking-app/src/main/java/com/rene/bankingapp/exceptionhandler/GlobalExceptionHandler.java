@@ -21,7 +21,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(TransactionMismatchException.class)
     public ResponseEntity<ErrorResponse> handleTransactionMismatchException(TransactionMismatchException ex) {
-        logger.error("TransactionMismatchException: {}", ex.getMessage());
+//        logger.error("TransactionMismatchException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(MediumMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMediumMismatchException(MediumMismatchException ex) {
-        logger.error("MediumMismatchException: {}", ex.getMessage());
+//        logger.error("MediumMismatchException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InsufficientFundsException.class)
     public ResponseEntity<ErrorResponse> handleInsufficientFundsException(InsufficientFundsException ex) {
-        logger.error("InsufficientFundsException: {}", ex.getMessage());
+//        logger.error("InsufficientFundsException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.PAYMENT_REQUIRED.value());
         errorResponse.setMessage(ex.getMessage());
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
-        logger.error("ResourceNotFoundException: {}", ex.getMessage());
+//        logger.error("ResourceNotFoundException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(ex.getMessage());
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
-        logger.error("InvalidInputException: {}", ex.getMessage());
+//        logger.error("InvalidInputException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ForbiddenAccessException.class)
     public ResponseEntity<ErrorResponse> handleForbiddenAccessException(ForbiddenAccessException ex) {
-        logger.error("ForbiddenAccessException: {}", ex.getMessage());
+//        logger.error("ForbiddenAccessException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.FORBIDDEN.value());
         errorResponse.setMessage(ex.getMessage());
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<ErrorResponse> handleInternalServerErrorException(InternalServerErrorException ex) {
-        logger.error("InternalServerErrorException: {}", ex.getMessage());
+//        logger.error("InternalServerErrorException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     //user tries to access a resource without proper authentication
     @ExceptionHandler(UnauthorizedAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex) {
-        logger.error("UnauthorizedAccessException: {}", ex.getMessage());
+//        logger.error("UnauthorizedAccessException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.UNAUTHORIZED.value());
         errorResponse.setMessage(ex.getMessage());
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     // occurs when there is a conflict with the current state of the resource(e.g. duplicate account creation)
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex) {
-        logger.error("ConflictException: {}", ex.getMessage());
+//        logger.error("ConflictException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
