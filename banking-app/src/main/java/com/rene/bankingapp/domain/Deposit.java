@@ -46,7 +46,7 @@ public class Deposit {
 
     @ManyToOne
     @JoinColumn(name="account_id")
-    private Account account;
+    private Long accountId;
 
 
 
@@ -125,11 +125,13 @@ public class Deposit {
         this.description = description;
     }
 
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }
+
+
