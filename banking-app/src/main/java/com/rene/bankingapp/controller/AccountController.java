@@ -1,7 +1,6 @@
 package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Account;
-import com.rene.bankingapp.exception.ResourceNotFoundException;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.service.AccountService;
 import jakarta.validation.Valid;

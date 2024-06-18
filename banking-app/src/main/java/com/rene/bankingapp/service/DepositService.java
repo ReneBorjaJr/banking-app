@@ -102,21 +102,21 @@ public class DepositService {
         }
     }
 
-    public ResponseEntity<?> updateADeposit(Long depositId, Deposit depositToUpdateWith) {
-
-        //update deposit logic
-
-        return new ResponseEntity<>;
-    }
-
-    public ResponseEntity<?> deleteADeposit(Long depositId) {
-
-        // delete deposit logic
-        verifyDepositExists(depositId);
-        accountRepository.deleteById(depositId);
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+//    public ResponseEntity<?> updateADeposit(Long depositId, Deposit depositToUpdateWith) {
+//
+//        //update deposit logic
+//
+//        return new ResponseEntity<>;
+//    }
+//
+//    public ResponseEntity<?> deleteADeposit(Long depositId) {
+//
+//        // delete deposit logic
+//        verifyDepositExists(depositId);
+//        accountRepository.deleteById(depositId);
+//
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 
     // Verify Methods
 

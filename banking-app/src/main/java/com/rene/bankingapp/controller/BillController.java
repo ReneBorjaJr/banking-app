@@ -17,7 +17,7 @@ public class BillController {
     public List<Bill> getBillsForAccount(@PathVariable Long accountId) {
         List<Bill> accountBills = new ArrayList<>();
         for (Bill bill : bills) {
-            if (bill.getAccountId().equals(accountId)) {
+            if (bill.getAccount().getId().equals(accountId)) {
                 accountBills.add(bill);
             }
         }
@@ -38,7 +38,7 @@ public class BillController {
     public List<Bill> getBillsForCustomer(@PathVariable Long customerId) {
         List<Bill> customerBills = new ArrayList<>();
         for (Bill bill : bills) {
-            if (bill.getAccountId().equals(customerId)) {
+            if (bill.getAccount().getCustomer().getId().equals(customerId)) {
                 customerBills.add(bill);
             }
         }
@@ -47,7 +47,7 @@ public class BillController {
 
     @PostMapping("/accounts/{accountId}/bills")
     public ResponseEntity<String> createBill(@PathVariable Long accountId, @RequestBody Bill bill) {
-        bill.setAccountId(accountId);
+        bill.getAccount().setId(accountId);
         bills.add(bill);
         return ResponseEntity.status(HttpStatus.CREATED).body("Created bill and added it to the account");
     }
