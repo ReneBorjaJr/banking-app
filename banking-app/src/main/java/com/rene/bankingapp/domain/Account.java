@@ -1,5 +1,6 @@
 package com.rene.bankingapp.domain;
 
+import com.rene.bankingapp.domain.enums.AccountType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +17,7 @@ public class Account {
  private Long id;
  @NotBlank
  @Enumerated(EnumType.STRING)
- private String type;
+ private AccountType type;
  @NotBlank
  @Size(min = 3, max = 20)
  private String nickname;
@@ -41,11 +42,11 @@ public class Account {
   this.id = id;
  }
 
- public String getType() {
+ public @NotBlank AccountType getType() {
   return type;
  }
 
- public void setType(String type) {
+ public void setType(@NotBlank AccountType type) {
   this.type = type;
  }
 

@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface DepositRepository extends CrudRepository<Deposit, Long> {
 
 
-    @Query(value="SELECT * FROM DEPOSIT WHERE ACCOUNT_ID = ?1")
+//    @Query(value="SELECT * FROM DEPOSIT WHERE ACCOUNT_ID = ?1")
     public Iterable<Deposit> findAllByAccountId(Long accountId);
 }
