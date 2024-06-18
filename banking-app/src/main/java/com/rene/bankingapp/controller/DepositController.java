@@ -62,4 +62,11 @@ public class DepositController {
 
     }
 
+    @PutMapping("/deposits/process/{depositId}")
+    public ResponseEntity<?> processDeposit(@PathVariable Long depositId){
+
+        return depositService.processDepositById(depositId);
+
+    }
+
 }
