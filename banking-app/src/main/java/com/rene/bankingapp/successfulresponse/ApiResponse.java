@@ -14,6 +14,11 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
+    public ApiResponse(int code, List<T> data){
+        this.code = code;
+        this.data = data;
+    }
+
     public int getCode() {
         return code;
     }
