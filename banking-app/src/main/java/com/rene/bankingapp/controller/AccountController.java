@@ -29,27 +29,13 @@ public class AccountController {
 
     @RequestMapping(value="/accounts", method=RequestMethod.POST)
     public ResponseEntity<?> createAccount(@Valid @RequestBody Account account) {
-        account = AccountService.save(account);
-
-        // Set the location header for the newly created resource
-        HttpHeaders responseHeaders = new HttpHeaders();
-        URI newAccountUri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(account.getId())
-                .toUri();
-        responseHeaders.setLocation(newAccountUri);
-        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+      return accountService.createAccount(account);
     }
 
     @RequestMapping(value="/accounts/{accountId}", method=RequestMethod.GET)
-    public ResponseEntity<?> getAccount(@PathVariable Long accountId) throws ResourceNotFoundException {
-        verifyaccount(accountId);
-        Optional<Account> a = AccountService.findById(accountId);
-        if(a.isEmpty()) {
-            throw new ResourceNotFoundException("Account with id " + accountId + " not found");
-        }
-        return new ResponseEntity<> (a, HttpStatus.OK);
+    public ResponseEntity<?> getAccount(@PathVariable Long accountId) {
+
+        return accountService.getAccountById(accountId);
     }
 
 
