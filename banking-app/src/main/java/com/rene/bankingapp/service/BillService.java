@@ -1,13 +1,17 @@
 package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Bill;
+import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.repository.BillRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional
 public class BillService {
 
     @Autowired
@@ -18,7 +22,12 @@ public class BillService {
     }
 
     public Bill getBillById(Long billId) {
-        return billRepository.findById(billId).orElse(null);
+        Optional<Bill> optionalBill = billRepository.findById(billId);
+        if (optionalBill.isPresent()) {
+            return optionalBill.get();
+        } else {
+            throw new ResourceNotFoundException("Error fetching bill with id: " + billId);
+        }
     }
 
     public List<Bill> getBillsByAccountId(Long accountId) {
@@ -30,9 +39,9 @@ public class BillService {
     }
 
     public Bill updateBill(Long billId, Bill updatedBill) {
-        Bill existingBill = billRepository.findById(billId).orElse(null);
-        if (existingBill != null) {
-            // Update fields
+        Optional<Bill> optionalExistingBill = billRepository.findById(billId);
+        if (optionalExistingBill.isPresent()) {
+            Bill existingBill = optionalExistingBill.get();
             existingBill.setStatus(updatedBill.getStatus());
             existingBill.setPayee(updatedBill.getPayee());
             existingBill.setNickname(updatedBill.getNickname());
@@ -44,18 +53,22 @@ public class BillService {
             existingBill.setAccountId(updatedBill.getAccountId());
 
             return billRepository.save(existingBill);
+        } else {
+            throw new ResourceNotFoundException("Error creating bill: Account not found " + billId);
         }
-        return null;
     }
 
     public boolean deleteBill(Long billId) {
-        Bill existingBill = billRepository.findById(billId).orElse(null);
-        if (existingBill != null) {
+        Optional<Bill> optionalExistingBill = billRepository.findById(billId);
+        if (optionalExistingBill.isPresent()) {
+            Bill existingBill = optionalExistingBill.get();
             billRepository.delete(existingBill);
             return true;
+        } else {
+            throw new ResourceNotFoundException("Bill ID does not exist " + billId);
         }
-        return false;
     }
 }
+
 
 

@@ -34,10 +34,6 @@ public class Bill {
     @NotNull
     private Long accountId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
-
     public Bill() {
     }
 
@@ -54,8 +50,7 @@ public class Bill {
         this.accountId = accountId;
     }
 
-
-
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -134,13 +129,5 @@ public class Bill {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
     }
 }
