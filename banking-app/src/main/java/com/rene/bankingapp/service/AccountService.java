@@ -1,7 +1,6 @@
 package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Account;
-import com.rene.bankingapp.exception.ResourceNotFoundException;
 import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.repository.AccountRepository;
 import jakarta.validation.Valid;
@@ -9,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -39,6 +40,10 @@ public class AccountService {
         verifyaccount(accountId);
         Optional<Account> account = accountRepository.findById(accountId);
         return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+    @GetMapping(value="/withdrawals/{withdrawalId}")
+    public Optional<Account> getAccountById2(@PathVariable Long accountId) {
+        return accountRepository.findById(accountId);
     }
 
     public ResponseEntity<?> createAccount(@Valid @RequestBody Account account) {

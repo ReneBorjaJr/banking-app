@@ -1,5 +1,6 @@
 package com.rene.bankingapp.domain;
 
+import com.rene.bankingapp.domain.enums.TransactionType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
@@ -8,7 +9,7 @@ public class Withdrawal {
     @GeneratedValue
     private Long id;
 
-    private String type;
+    private TransactionType type;
     private String transaction_Date;
     private String status;
     private Long payer_id;
@@ -24,11 +25,11 @@ public class Withdrawal {
         this.id = id;
     }
 
-    public String getType() {
+    public TransactionType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TransactionType type) {
         this.type = type;
     }
 
