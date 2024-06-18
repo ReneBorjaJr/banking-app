@@ -1,14 +1,10 @@
 package com.rene.bankingapp.domain;
 
-import jakarta.annotation.Nonnull;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import org.springframework.lang.NonNull;
+
 
 @Entity
 public class Deposit {
@@ -48,9 +44,15 @@ public class Deposit {
     @NotEmpty
     private String description;
 
+    @ManyToOne
+    @Column(name="account")
+    private Account account;
 
 
-    // Getter and Setter
+
+
+    // Getters and Setters
+
     public Long getDepositId() {
         return depositId;
     }
@@ -58,6 +60,7 @@ public class Deposit {
     public void setDepositId(Long depositId) {
         this.depositId = depositId;
     }
+
 
     public String getType() {
         return type;
@@ -67,6 +70,7 @@ public class Deposit {
         this.type = type;
     }
 
+
     public String getTransactionDate() {
         return transactionDate;
     }
@@ -74,6 +78,7 @@ public class Deposit {
     public void setTransactionDate(String transactionDate) {
         this.transactionDate = transactionDate;
     }
+
 
     public String getStatus() {
         return status;
@@ -83,13 +88,16 @@ public class Deposit {
         this.status = status;
     }
 
+
     public Long getPayee_id() {
         return payee_id;
     }
 
+
     public void setPayee_id(Long payee_id) {
         this.payee_id = payee_id;
     }
+
 
     public String getMedium() {
         return medium;
@@ -99,6 +107,7 @@ public class Deposit {
         this.medium = medium;
     }
 
+
     public Double getAmount() {
         return amount;
     }
@@ -107,11 +116,20 @@ public class Deposit {
         this.amount = amount;
     }
 
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

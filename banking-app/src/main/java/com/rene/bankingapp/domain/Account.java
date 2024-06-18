@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 @Entity
 public class Account {
  @Id
@@ -26,6 +28,10 @@ public class Account {
  @NotNull
  @ManyToOne(fetch = FetchType.LAZY)
  private Customer customer;
+
+// @OneToMany(cascade = CascadeType.ALL)
+// @JoinColumn(name="ACCOUNT_ID")
+// private Set<Deposit> deposits;
 
  public Long getId() {
   return id;
@@ -75,7 +81,12 @@ public class Account {
   this.customer = customer;
  }
 
+// public Set<Deposit> getDeposits() {
+//  return deposits;
+// }
 
-
+// public void setDeposits(Set<Deposit> deposits) {
+//  this.deposits = deposits;
+// }
 
 }
