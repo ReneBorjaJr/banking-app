@@ -1,5 +1,16 @@
 package com.rene.bankingapp.controller;
 
+import com.rene.bankingapp.domain.Deposit;
+import com.rene.bankingapp.domain.enums.Medium;
+import com.rene.bankingapp.domain.enums.TransactionType;
+import com.rene.bankingapp.service.DepositService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 public class DepositController {
 
     @Autowired
