@@ -46,20 +46,20 @@ public class DepositController {
 
 
 
-    @PutMapping("/deposits/{depositId}")
-    public ResponseEntity<?> updateDeposit(@PathVariable Long depositId, @Valid Deposit depositToUpdateWith){
-
-        return depositService.updateADeposit(depositId, depositToUpdateWith);
-
-    }
-
-
-
-    @DeleteMapping("/deposits/{depositId}")
-    public ResponseEntity<?> deleteDeposit(@PathVariable Long depositId){
-
-        return depositService.deleteADeposit(depositId);
-
-    }
+//    @PutMapping("/deposits/{depositId}")
+//    public ResponseEntity<?> updateDeposit(@PathVariable Long depositId, @Valid Deposit depositToUpdateWith){
+//
+//        return depositService.updateADeposit(depositId, depositToUpdateWith);
+//
+//    }
+//
+//
+//
+//    @DeleteMapping("/deposits/{depositId}")
+//    public ResponseEntity<?> deleteDeposit(@PathVariable Long depositId){
+//
+//        return depositService.deleteADeposit(depositId);
+//
+//    }
 
 }

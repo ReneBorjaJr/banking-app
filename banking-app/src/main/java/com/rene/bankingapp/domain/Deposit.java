@@ -45,7 +45,7 @@ public class Deposit {
     private String description;
 
     @ManyToOne
-    @Column(name="account")
+    @JoinColumn(name="account_id")
     private Account account;
 
 
