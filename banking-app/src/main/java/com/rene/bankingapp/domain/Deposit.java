@@ -1,9 +1,6 @@
 package com.rene.bankingapp.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -46,6 +43,11 @@ public class Deposit {
     @Column(name="deposit_description")
     @NotEmpty
     private String description;
+
+    @ManyToOne
+    @Column(name="account")
+    private Account account;
+
 
 
 
@@ -121,5 +123,13 @@ public class Deposit {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }
