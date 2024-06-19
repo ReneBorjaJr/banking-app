@@ -2,13 +2,13 @@ package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Account;
 import com.rene.bankingapp.domain.Deposit;
-import com.rene.bankingapp.domain.enums.DepositStatus;
 import com.rene.bankingapp.domain.enums.Medium;
 import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.exceptions.*;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.repository.DepositRepository;
 import com.rene.bankingapp.successfulresponse.ApiResponse;
+import com.rene.bankingapp.util.DepositRequestFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -83,7 +83,15 @@ public class DepositService {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> createTheDeposit(Long accountId, TransactionType depositType, Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription) {
+    public ResponseEntity<?> startCreateDepositProcess(Long accountId, DepositRequestFormat depositRequestFormat) {
+
+        // extract variables from depositRequestFormat
+        TransactionType depositType = depositRequestFormat.getDepositType();
+        Long payeeId = depositRequestFormat.getPayeeId();
+        Medium depositMedium = depositRequestFormat.getDepositMedium();
+        Double depositAmount = depositRequestFormat.getDepositAmount();
+        String depositDescription = depositRequestFormat.getDepositDescription();
+
 
         // if depositDescription is null, change it to "No description given"
         if (depositDescription.equals(null)){
