@@ -38,7 +38,7 @@ public class DepositController {
 
 
     @PostMapping("/accounts/{accountId}/deposits")
-    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @NotNull @RequestParam TransactionType depositType, @RequestParam(required = false) Long payee_id, @NotNull @RequestParam Medium depositMedium, @Positive @NotNull @RequestParam Double depositAmount, @RequestParam(required = false, defaultValue = "No description given.") String depositDescription){
+    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @NotNull @RequestPart TransactionType depositType, @RequestPart(required = false) Long payee_id, @NotNull @RequestPart Medium depositMedium, @Positive @NotNull @RequestPart Double depositAmount, @RequestPart(required = false) String depositDescription){
 
         return depositService.createTheDeposit(accountId, depositType, payee_id, depositMedium, depositAmount, depositDescription);
 

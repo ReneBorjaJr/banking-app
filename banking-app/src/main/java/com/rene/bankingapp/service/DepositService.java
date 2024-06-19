@@ -85,6 +85,12 @@ public class DepositService {
 
     public ResponseEntity<?> createTheDeposit(Long accountId, TransactionType depositType, Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription) {
 
+        // if depositDescription is null, change it to "No description given"
+        if (depositDescription.equals(null)){
+            depositDescription = "No description given";
+        }
+
+
         // validate that medium is not withdraw
         verifyNotWithdraw(depositType);
 
