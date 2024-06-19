@@ -19,7 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import java.time.LocalTime;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,12 +111,12 @@ public class DepositService {
         // if deposit type = deposit
         if (depositType.equals(TransactionType.DEPOSIT)) {
             // run a method that processes deposit transaction type
-            return processDepositTransaction(account, payeeId, depositMedium, depositAmount, depositDescription);
+            return processDepositTransaction(accountId, payeeId, depositMedium, depositAmount, depositDescription);
 
         } else {
             // if deposit type = p2p
             // run a method that processes p2p transaction type
-            return processP2pTransaction(account, payeeId, depositMedium, depositAmount, depositDescription);
+            return processP2pTransaction(accountId, payeeId, depositMedium, depositAmount, depositDescription);
 
         }
     }
@@ -132,7 +133,7 @@ public class DepositService {
         validateUpdateDeposit(oldDeposit, depositToUpdateWith);
 
         // update timestamp
-        depositToUpdateWith.setTransactionDate(LocalTime.now().toString());
+        depositToUpdateWith.setTransactionDate(LocalDate.now().toString());
 
         // if new depositToUpdate.depositDescription == null set default
         if (depositToUpdateWith.getDescription() == null){
@@ -220,12 +221,12 @@ public class DepositService {
         }
 
         // accountId's match
-        if (!oldDeposit.getAccount().equals(depositToUpdateWith.getAccount())){
+        if (!oldDeposit.getAccountId().equals(depositToUpdateWith.getAccountId())){
             throw new ConflictException("Updated accountId must match previous accountId.");
         }
 
         // accountId still exists
-        verifyAccountExists(depositToUpdateWith.getAccount().getId());
+        verifyAccountExists(depositToUpdateWith.getAccountId());
 
         // depositId's match
         if (!oldDeposit.getDepositId().equals(depositToUpdateWith.getDepositId())){
@@ -254,22 +255,22 @@ public class DepositService {
 
     // Process Transaction Methods
 
-    public ResponseEntity<?> processDepositTransaction(Account account, @Null Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> processDepositTransaction(Long accountId, @Null Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
 
         // check deposit medium
             // if Balance medium
             if (depositMedium.equals(Medium.BALANCE)){
                 // make Balance deposit
-                return createBalanceDeposit(account, depositAmount, depositDescription);
+                return createBalanceDeposit(accountId, depositAmount, depositDescription);
 
             } else {
                 // if rewards medium
                 // make rewards deposit
-                return createRewardsDeposit(account, depositAmount, depositDescription);
+                return createRewardsDeposit(accountId, depositAmount, depositDescription);
             }
     }
 
-    public ResponseEntity<?> processP2pTransaction(Account account, @NotNull Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> processP2pTransaction(Long accountId, @NotNull Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
 
         // validate payeeId
         verifyAccountExists(payeeId);
@@ -280,26 +281,26 @@ public class DepositService {
         }
 
         // make p2p deposit
-        return createP2pDeposit(account, payeeId, depositAmount, depositDescription);
+        return createP2pDeposit(accountId, payeeId, depositAmount, depositDescription);
 
     }
 
 
     // Create Deposit Methods
 
-    public ResponseEntity<?> createBalanceDeposit(Account account, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> createBalanceDeposit(Long accountId, Double depositAmount, String depositDescription){
 
         // create new Deposit object
         Deposit deposit = new Deposit();
 
         // set values of object
         deposit.setType("Deposit");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setMedium("Balance");
         deposit.setAmount(depositAmount);
         deposit.setDescription(depositDescription);
-        deposit.setAccount(account);
+        deposit.setAccountId(accountId);
 
         // save object to repo and store method call as a new Deposit object
         deposit = depositRepository.save(deposit);
@@ -317,19 +318,19 @@ public class DepositService {
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> createRewardsDeposit(Account account, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> createRewardsDeposit(Long accountId, Double depositAmount, String depositDescription){
 
         // create new Deposit object
         Deposit deposit = new Deposit();
 
         // set values of object
         deposit.setType("Deposit");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setMedium("Rewards");
         deposit.setAmount(depositAmount);
         deposit.setDescription(depositDescription);
-        deposit.setAccount(account);
+        deposit.setAccountId(accountId);
 
         // populate api response
         List<Deposit> listForResponse = new ArrayList<>();
@@ -345,20 +346,20 @@ public class DepositService {
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> createP2pDeposit(Account account, Long payeeId, Double depositAmount, String depositDescription){
+    public ResponseEntity<?> createP2pDeposit(Long accountId, Long payeeId, Double depositAmount, String depositDescription){
 
         // create new Deposit object
         Deposit deposit = new Deposit();
 
         // set values of object
         deposit.setType("P2P");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setPayee_id(payeeId);
         deposit.setMedium("Balance");
         deposit.setAmount(depositAmount);
         deposit.setDescription(depositDescription);
-        deposit.setAccount(account);
+        deposit.setAccountId(accountId);
 
         // populate ApiResponse
         List<Deposit> listForResponse = new ArrayList<>();
@@ -383,7 +384,7 @@ public class DepositService {
         Deposit deposit = depositRepository.findById(depositId).get();
 
         // get account id from deposit
-        Long accountId = deposit.getAccount().getId();
+        Long accountId = deposit.getAccountId();
 
         // validate account still exists
         verifyAccountExists(accountId);
