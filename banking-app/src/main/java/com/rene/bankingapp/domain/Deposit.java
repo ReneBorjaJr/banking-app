@@ -36,7 +36,7 @@ public class Deposit {
     private String medium;
 
     @Column(name="deposit_amount")
-    @NotEmpty
+    @NotNull
     @Positive
     private Double amount;
 
@@ -44,8 +44,8 @@ public class Deposit {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="Account")
-    private Account account;
+    @JoinColumn(name="ACCOUNT_ID")
+    private Long accountId;
 
 
 
@@ -124,12 +124,12 @@ public class Deposit {
         this.description = description;
     }
 
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }
 
