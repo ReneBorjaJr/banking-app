@@ -33,6 +33,11 @@ public class Bill {
 
     @NotNull
     private Long accountId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
+
     @NotNull
     public Bill() {
     }
