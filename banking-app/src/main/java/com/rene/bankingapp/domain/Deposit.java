@@ -36,16 +36,13 @@ public class Deposit {
     private String medium;
 
     @Column(name="deposit_amount")
-    @NotEmpty
+    @NotNull
     @Positive
     private Double amount;
 
     @Column(name="deposit_description")
-    @NotEmpty
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name="account_id")
     private Long accountId;
 
 
