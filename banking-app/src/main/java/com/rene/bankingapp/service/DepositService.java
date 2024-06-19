@@ -332,6 +332,9 @@ public class DepositService {
         deposit.setDescription(depositDescription);
         deposit.setAccountId(accountId);
 
+        // save object to repo and store method call as a new Deposit object
+        deposit = depositRepository.save(deposit);
+
         // populate api response
         List<Deposit> listForResponse = new ArrayList<>();
         listForResponse.add(deposit);
@@ -360,6 +363,9 @@ public class DepositService {
         deposit.setAmount(depositAmount);
         deposit.setDescription(depositDescription);
         deposit.setAccountId(accountId);
+
+        // save object to repo and store method call as a new Deposit object
+        deposit = depositRepository.save(deposit);
 
         // populate ApiResponse
         List<Deposit> listForResponse = new ArrayList<>();
