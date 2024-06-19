@@ -31,8 +31,12 @@ public class Bill {
     @NotNull
     private Double paymentAmount;
 
-    @NotNull
-    private Long accountId;
+//    @NotNull
+//    private Long accountId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     public Bill() {
     }
@@ -47,10 +51,10 @@ public class Bill {
         this.recurringDate = recurringDate;
         this.upcomingPaymentDate = upcomingPaymentDate;
         this.paymentAmount = paymentAmount;
-        this.accountId = accountId;
     }
 
-    // Getters and setters
+
+
     public Long getId() {
         return id;
     }
@@ -123,11 +127,19 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-    public Long getAccountId() {
-        return accountId;
+//    public Long getAccountId() {
+//        return accountId;
+//    }
+//
+//    public void setAccountId(Long accountId) {
+//        this.accountId = accountId;
+//    }
+
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

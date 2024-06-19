@@ -50,7 +50,7 @@ public class BillService {
             existingBill.setRecurringDate(updatedBill.getRecurringDate());
             existingBill.setUpcomingPaymentDate(updatedBill.getUpcomingPaymentDate());
             existingBill.setPaymentAmount(updatedBill.getPaymentAmount());
-            existingBill.setAccountId(updatedBill.getAccountId());
+//            existingBill.setAccountId(updatedBill.getAccountId());
 
             return billRepository.save(existingBill);
         } else {
