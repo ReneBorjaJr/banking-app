@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
 
 
     @ExceptionHandler(TransactionMismatchException.class)
@@ -25,6 +26,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(TransactionMismatchException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -32,6 +36,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMediumMismatchException(MediumMismatchException ex) {
 //        logger.error("MediumMismatchException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse();
+
+        log.error(MediumMismatchException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -42,6 +49,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.PAYMENT_REQUIRED.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(InsufficientFundsException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.PAYMENT_REQUIRED);
     }
 
@@ -52,6 +62,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(ResourceNotFoundException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -61,6 +74,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(InvalidInputException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -70,6 +86,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.FORBIDDEN.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(ForbiddenAccessException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
@@ -79,6 +98,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(InternalServerErrorException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -89,6 +111,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.UNAUTHORIZED.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(UnauthorizedAccessException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -99,6 +124,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(HttpStatus.CONFLICT.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(ConflictException.class.getName() + ": " + ex.getMessage() + ".");
+
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -108,6 +136,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setCode(status.value());
         errorResponse.setMessage(ex.getMessage());
+
+        log.error(HttpMessageNotReadableException.class.getName() + ": " + ex.getMessage() + ".");
+
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }
 }

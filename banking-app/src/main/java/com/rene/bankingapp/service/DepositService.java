@@ -51,6 +51,10 @@ public class DepositService {
 
         ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
 
+        // log
+
+        log.info("All deposits with accountId: " + accountId + " received successfully.");
+
         // populate the response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
@@ -71,6 +75,9 @@ public class DepositService {
         listForResponse.add(deposit);
         ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
 
+
+        // log
+        log.info("Deposit with Id: " + depositId + " received successfully.");
 
         // populate the response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -104,7 +111,6 @@ public class DepositService {
         verifyDepositExists(depositId);
 
         // get old deposit
-
         Deposit oldDeposit = depositRepository.findById(depositId).get();
 
         // validate new deposit
@@ -122,6 +128,8 @@ public class DepositService {
 
         ApiResponse<?> apiResponse = new ApiResponse<>(200, "Accepted deposit modification.", listForResponse);
 
+        // log
+        log.info("Deposit with Id: " + depositId + " updated successfully.");
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -131,6 +139,9 @@ public class DepositService {
         // delete deposit logic
         verifyDepositExists(depositId);
         accountRepository.deleteById(depositId);
+
+        // log
+        log.info("Deposit with Id: " + depositId + " deleted successfully.");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -279,6 +290,9 @@ public class DepositService {
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
 
+        // log
+        log.info("Created deposit and added it to the account.");
+
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
@@ -302,6 +316,10 @@ public class DepositService {
         listForResponse.add(deposit);
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+
+        // log
+        log.info("Created deposit and added it to the account.");
 
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -327,6 +345,9 @@ public class DepositService {
         listForResponse.add(deposit);
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+        // log
+        log.info("Created deposit and added it to the account.");
 
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -396,7 +417,10 @@ public class DepositService {
 
             ApiResponse<?> apiResponse = new ApiResponse<>(200, "Deposit processed successfully.", listForResponse);
 
-            //return response entity
+            // log
+            log.info("Deposit with Id: + " + depositId  + " processed successfully.");
+
+            // return response entity
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         } else {
@@ -421,6 +445,9 @@ public class DepositService {
             listForResponse.add(deposit);
 
             ApiResponse<?> apiResponse = new ApiResponse<>(200, "Deposit processed successfully.", listForResponse);
+
+            // log
+            log.info("Deposit with Id: + " + depositId  + " processed successfully.");
 
             //return response entity
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
