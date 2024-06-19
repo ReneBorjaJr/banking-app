@@ -41,12 +41,11 @@ public class Deposit {
     private Double amount;
 
     @Column(name="deposit_description")
-    @NotEmpty
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="account_id")
-    private Long accountId;
+    @JoinColumn(name="Account")
+    private Account account;
 
 
 
@@ -125,12 +124,12 @@ public class Deposit {
         this.description = description;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }
 
