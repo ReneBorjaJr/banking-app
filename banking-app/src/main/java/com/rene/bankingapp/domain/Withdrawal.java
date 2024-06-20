@@ -1,19 +1,28 @@
 package com.rene.bankingapp.domain;
 
 import com.rene.bankingapp.domain.enums.TransactionType;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
+@Entity
 public class Withdrawal {
     @Id
     @GeneratedValue
     private Long id;
-
+    @NotEmpty
     private TransactionType type;
+    @NotEmpty
     private String transaction_Date;
+    @NotEmpty
     private String status;
+    @NotNull
     private Long payer_id;
+    @NotNull
     private String medium;
+    @NotNull
     private Double amount;
     private String description;
 
