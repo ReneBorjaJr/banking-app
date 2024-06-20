@@ -43,6 +43,8 @@ public class Deposit {
     @Column(name="deposit_description")
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name="ACCOUNT_ID")
     private Long accountId;
 
 

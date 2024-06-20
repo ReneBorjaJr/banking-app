@@ -2,9 +2,7 @@ package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Customer;
 import com.rene.bankingapp.service.CustomerService;
-import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +38,5 @@ public class CustomerController {
     public ResponseEntity<?> getCustomerByAccountId(@PathVariable Long accountId) {
         return service.getCustomerByAccountId(accountId);
     }
-
 
 }

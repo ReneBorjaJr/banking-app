@@ -4,11 +4,6 @@ import com.rene.bankingapp.domain.Address;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.util.Set;
-
-import com.rene.bankingapp.domain.Address;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Set;
 
