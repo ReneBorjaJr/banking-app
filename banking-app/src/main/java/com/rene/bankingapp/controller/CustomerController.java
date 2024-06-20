@@ -39,6 +39,4 @@ public class CustomerController {
         return service.getCustomerByAccountId(accountId);
     }
 
-
 }
-
