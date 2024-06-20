@@ -163,9 +163,6 @@ public class DepositService {
         depositRepository.deleteById(depositId);
 
         // log
-        log.info("Deposit with Id (" + depositId + ") deleted successfully.");
-
-        // log
         log.info("Deposit with Id: " + depositId + " deleted successfully.");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
