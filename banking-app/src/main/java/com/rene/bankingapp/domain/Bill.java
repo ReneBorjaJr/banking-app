@@ -12,32 +12,43 @@ public class Bill {
     private Long id;
 
     @NotNull
+    @Column(name = "status")
     private String status;
 
     @NotNull
+    @Column(name = "payee")
     private String payee;
 
+    @NotNull
+    @Column(name = "nickname")
     private String nickname;
 
     @NotNull
+    @Column(name = "creation_date")
     private Date creationDate;
 
+    @NotNull
+    @Column(name = "payment_date")
     private Date paymentDate;
 
+    @NotNull
+    @Column(name = "recurring_date")
     private Integer recurringDate;
 
+    @NotNull
+    @Column(name = "upcoming_payment_date")
     private Date upcomingPaymentDate;
 
     @NotNull
+    @Column(name = "payment_amount")
     private Double paymentAmount;
 
-//    @NotNull
-//    private Long accountId;
+    @NotNull
+    @Column(name = "account_id")
+    private Long accountId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
 
+    @NotNull
     public Bill() {
     }
 
@@ -51,8 +62,8 @@ public class Bill {
         this.recurringDate = recurringDate;
         this.upcomingPaymentDate = upcomingPaymentDate;
         this.paymentAmount = paymentAmount;
+        this.accountId = accountId;
     }
-
 
 
     public Long getId() {
@@ -127,19 +138,11 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-//    public Long getAccountId() {
-//        return accountId;
-//    }
-//
-//    public void setAccountId(Long accountId) {
-//        this.accountId = accountId;
-//    }
-
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }
