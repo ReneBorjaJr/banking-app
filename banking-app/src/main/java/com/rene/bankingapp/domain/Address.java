@@ -1,16 +1,15 @@
 package com.rene.bankingapp.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
+@Table(name = "ADDRESS")
 public class Address {
 
     @Id
     @GeneratedValue
+    @Column(name = "ADDRESS_ID")
     private Long id;
 
     @NotEmpty
@@ -32,6 +31,10 @@ public class Address {
     @NotEmpty
     @Column(name = "ZIP")
     private String zip;
+
+
+    public Address() {
+    }
 
     public Address(String city, Long id, String state, String street_name, String street_number, String zip) {
         this.city = city;
@@ -90,15 +93,5 @@ public class Address {
         this.zip = zip;
     }
 
-    @Override
-    public String toString() {
-        return "Address{" +
-                "city='" + city + '\'' +
-                ", id=" + id +
-                ", street_number='" + street_number + '\'' +
-                ", street_name='" + street_name + '\'' +
-                ", state='" + state + '\'' +
-                ", zip='" + zip + '\'' +
-                '}';
-    }
+
 }
