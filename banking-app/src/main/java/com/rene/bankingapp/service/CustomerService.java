@@ -1,5 +1,6 @@
 package com.rene.bankingapp.service;
 
+import com.rene.bankingapp.domain.Account;
 import com.rene.bankingapp.domain.Address;
 import com.rene.bankingapp.domain.Customer;
 import com.rene.bankingapp.exceptions.InvalidInputException;
