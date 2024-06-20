@@ -1,4 +1,7 @@
 package com.rene.bankingapp.repository;
 
-public interface WithdrawalRepository {
+import com.rene.bankingapp.domain.Withdrawal;
+import org.springframework.data.repository.CrudRepository;
+
+public interface WithdrawalRepository extends CrudRepository<Withdrawal, Long> {
 }

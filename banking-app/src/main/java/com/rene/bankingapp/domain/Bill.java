@@ -31,10 +31,13 @@ public class Bill {
     @NotNull
     private Double paymentAmount;
 
-    @NotNull
-    private Long accountId;
+//    @NotNull
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "account_id")
+//    private Long accountId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -42,19 +45,18 @@ public class Bill {
     public Bill() {
     }
 
-    public Bill(String status, String payee, String nickname, Date creationDate, Date paymentDate,
-                Integer recurringDate, Date upcomingPaymentDate, Double paymentAmount, Long accountId) {
-        this.status = status;
-        this.payee = payee;
-        this.nickname = nickname;
+    public Bill(Account account, Date creationDate, Long id, String nickname, String payee, Double paymentAmount, Date paymentDate, Integer recurringDate, String status, Date upcomingPaymentDate) {
+        this.account = account;
         this.creationDate = creationDate;
+        this.id = id;
+        this.nickname = nickname;
+        this.payee = payee;
+        this.paymentAmount = paymentAmount;
         this.paymentDate = paymentDate;
         this.recurringDate = recurringDate;
+        this.status = status;
         this.upcomingPaymentDate = upcomingPaymentDate;
-        this.paymentAmount = paymentAmount;
-        this.accountId = accountId;
     }
-
 
     public Long getId() {
         return id;
@@ -128,11 +130,19 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-    public Long getAccountId() {
-        return accountId;
+//    public Long getAccountId() {
+//        return accountId;
+//    }
+//
+//    public void setAccountId(Long accountId) {
+//        this.accountId = accountId;
+//    }
+
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 }

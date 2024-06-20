@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @Entity
 public class Deposit {
-
 
     @Id
     @GeneratedValue
@@ -36,19 +36,14 @@ public class Deposit {
     private String medium;
 
     @Column(name="deposit_amount")
-    @NotEmpty
+    @NotNull
     @Positive
     private Double amount;
 
     @Column(name="deposit_description")
-    @NotEmpty
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name="account_id")
     private Long accountId;
-
-
 
 
     // Getters and Setters

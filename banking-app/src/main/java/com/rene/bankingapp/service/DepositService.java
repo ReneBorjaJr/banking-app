@@ -9,6 +9,7 @@ import com.rene.bankingapp.exceptions.*;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.repository.DepositRepository;
 import com.rene.bankingapp.successfulresponse.ApiResponse;
+import com.rene.bankingapp.util.DepositRequestFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +54,10 @@ public class DepositService {
 
         ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
 
+        // log
+
+        log.info("All deposits with accountId: " + accountId + " retrieved successfully.");
+
         // populate the response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
@@ -72,17 +79,35 @@ public class DepositService {
         ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, listForResponse);
 
 
+        // log
+        log.info("Deposit with Id: " + depositId + " retrieved successfully.");
+
         // populate the response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> createTheDeposit(Long accountId, TransactionType depositType, Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription) {
+    public ResponseEntity<?> startCreateDepositProcess(Long accountId, DepositRequestFormat depositRequestFormat) {
+
+        // extract variables from depositRequestFormat
+        TransactionType depositType = depositRequestFormat.getDepositType();
+        Long payeeId = depositRequestFormat.getPayeeId();
+        Medium depositMedium = depositRequestFormat.getDepositMedium();
+        Double depositAmount = depositRequestFormat.getDepositAmount();
+        String depositDescription = depositRequestFormat.getDepositDescription();
+
+
+        // if depositDescription is null, change it to "No description given"
+        if (depositDescription == null){
+            depositDescription = "No description given";
+        }
+
 
         // validate that medium is not withdraw
         verifyNotWithdraw(depositType);
 
-        // validate that account exists
+        // validate that account exists and if so generate the Account object
         verifyAccountExists(accountId);
+        Account account = accountRepository.findById(accountId).get();
 
         // check deposit type
         // if deposit type = deposit
@@ -104,14 +129,18 @@ public class DepositService {
         verifyDepositExists(depositId);
 
         // get old deposit
-
         Deposit oldDeposit = depositRepository.findById(depositId).get();
 
         // validate new deposit
         validateUpdateDeposit(oldDeposit, depositToUpdateWith);
 
         // update timestamp
-        depositToUpdateWith.setTransactionDate(LocalTime.now().toString());
+        depositToUpdateWith.setTransactionDate(LocalDate.now().toString());
+
+        // if new depositToUpdate.depositDescription == null set default
+        if (depositToUpdateWith.getDescription() == null){
+            depositToUpdateWith.setDescription("No description given");
+        }
 
         // afterwards, update
         Deposit updatedDeposit = depositRepository.save(depositToUpdateWith);
@@ -122,6 +151,8 @@ public class DepositService {
 
         ApiResponse<?> apiResponse = new ApiResponse<>(200, "Accepted deposit modification.", listForResponse);
 
+        // log
+        log.info("Deposit with Id: " + depositId + " updated successfully.");
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -130,7 +161,10 @@ public class DepositService {
 
         // delete deposit logic
         verifyDepositExists(depositId);
-        accountRepository.deleteById(depositId);
+        depositRepository.deleteById(depositId);
+
+        // log
+        log.info("Deposit with Id: " + depositId + " deleted successfully.");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -205,7 +239,7 @@ public class DepositService {
         verifyDepositExists(depositToUpdateWith.getDepositId());
 
         // verify the new deposit type is Deposit or P2P
-        if (!depositToUpdateWith.getType().equals("Deposit") || !depositToUpdateWith.getType().equals("P2P")){
+        if (!depositToUpdateWith.getType().equals("Deposit") && !depositToUpdateWith.getType().equals("P2P")){
             throw new TransactionMismatchException("Transaction type: " + depositToUpdateWith.getType() + " is not valid for this operation.");
         }
 
@@ -226,16 +260,16 @@ public class DepositService {
     public ResponseEntity<?> processDepositTransaction(Long accountId, @Null Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
 
         // check deposit medium
-            // if Balance medium
-            if (depositMedium.equals(Medium.BALANCE)){
-                // make Balance deposit
-                return createBalanceDeposit(accountId, depositAmount, depositDescription);
+        // if Balance medium
+        if (depositMedium.equals(Medium.BALANCE)){
+            // make Balance deposit
+            return createBalanceDeposit(accountId, depositAmount, depositDescription);
 
-            } else {
-                // if rewards medium
-                // make rewards deposit
-                return createRewardsDeposit(accountId, depositAmount, depositDescription);
-            }
+        } else {
+            // if rewards medium
+            // make rewards deposit
+            return createRewardsDeposit(accountId, depositAmount, depositDescription);
+        }
     }
 
     public ResponseEntity<?> processP2pTransaction(Long accountId, @NotNull Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
@@ -263,7 +297,7 @@ public class DepositService {
 
         // set values of object
         deposit.setType("Deposit");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setMedium("Balance");
         deposit.setAmount(depositAmount);
@@ -279,6 +313,9 @@ public class DepositService {
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
 
+        // log
+        log.info("Created deposit and added it to the account.");
+
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
@@ -290,18 +327,25 @@ public class DepositService {
 
         // set values of object
         deposit.setType("Deposit");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setMedium("Rewards");
         deposit.setAmount(depositAmount);
         deposit.setDescription(depositDescription);
         deposit.setAccountId(accountId);
 
+        // save object to repo and store method call as a new Deposit object
+        deposit = depositRepository.save(deposit);
+
         // populate api response
         List<Deposit> listForResponse = new ArrayList<>();
         listForResponse.add(deposit);
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+
+        // log
+        log.info("Created deposit and added it to the account.");
 
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -314,7 +358,7 @@ public class DepositService {
 
         // set values of object
         deposit.setType("P2P");
-        deposit.setTransactionDate(LocalTime.now().toString());
+        deposit.setTransactionDate(LocalDate.now().toString());
         deposit.setStatus("Pending");
         deposit.setPayee_id(payeeId);
         deposit.setMedium("Balance");
@@ -322,11 +366,17 @@ public class DepositService {
         deposit.setDescription(depositDescription);
         deposit.setAccountId(accountId);
 
+        // save object to repo and store method call as a new Deposit object
+        deposit = depositRepository.save(deposit);
+
         // populate ApiResponse
         List<Deposit> listForResponse = new ArrayList<>();
         listForResponse.add(deposit);
 
         ApiResponse<?> apiResponse = new ApiResponse<>(201, "Created deposit and added it to the account.", listForResponse);
+
+        // log
+        log.info("Created deposit and added it to the account.");
 
         //return response entity
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
@@ -396,7 +446,10 @@ public class DepositService {
 
             ApiResponse<?> apiResponse = new ApiResponse<>(200, "Deposit processed successfully.", listForResponse);
 
-            //return response entity
+            // log
+            log.info("Deposit with Id: + " + depositId  + " processed successfully.");
+
+            // return response entity
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
         } else {
@@ -421,6 +474,9 @@ public class DepositService {
             listForResponse.add(deposit);
 
             ApiResponse<?> apiResponse = new ApiResponse<>(200, "Deposit processed successfully.", listForResponse);
+
+            // log
+            log.info("Deposit with Id: + " + depositId  + " processed successfully.");
 
             //return response entity
             return new ResponseEntity<>(apiResponse, HttpStatus.OK);
