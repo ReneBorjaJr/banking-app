@@ -31,10 +31,6 @@ public class Bill {
     @NotNull
     private Double paymentAmount;
 
-//    @NotNull
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "account_id")
-//    private Long accountId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -131,14 +127,6 @@ public class Bill {
     public void setPaymentAmount(Double paymentAmount) {
         this.paymentAmount = paymentAmount;
     }
-
-//    public Long getAccountId() {
-//        return accountId;
-//    }
-//
-//    public void setAccountId(Long accountId) {
-//        this.accountId = accountId;
-//    }
 
     public Account getAccount() {
         return account;

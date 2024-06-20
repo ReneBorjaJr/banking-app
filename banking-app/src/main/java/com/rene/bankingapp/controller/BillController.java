@@ -43,16 +43,11 @@ public class BillController {
     @PostMapping("/accounts/{accountId}/bills")
     public ResponseEntity<String> createBill(@PathVariable Long accountId, @RequestBody @Valid Bill bill) {
         try {
-            // Generate ID and set account ID
             bill.setId(generateBillId());
             bill.getAccount().setId(accountId);
-
-            // Add bill to the list
             bills.add(bill);
-
             return ResponseEntity.status(HttpStatus.CREATED).body("Created bill and added it to the account");
         } catch (Exception ex) {
-            // Handle unexpected errors
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error creating bill: " + ex.getMessage());
         }
     }
@@ -61,8 +56,6 @@ public class BillController {
     public ResponseEntity<String> updateBill(@PathVariable Long billId, @RequestBody @Valid Bill updatedBill) {
         try {
             Bill existingBill = findBillById(billId);
-
-            // Update bill properties
             existingBill.setStatus(updatedBill.getStatus());
             existingBill.setPayee(updatedBill.getPayee());
             existingBill.setNickname(updatedBill.getNickname());
@@ -71,7 +64,6 @@ public class BillController {
             existingBill.setRecurringDate(updatedBill.getRecurringDate());
             existingBill.setUpcomingPaymentDate(updatedBill.getUpcomingPaymentDate());
             existingBill.setPaymentAmount(updatedBill.getPaymentAmount());
-
             return ResponseEntity.ok("Bill updated");
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -87,8 +79,7 @@ public class BillController {
                 iterator.remove();
                 return ResponseEntity.ok("Bill deleted successfully");
             }
-        }
-        throw new ResourceNotFoundException("Bill with ID " + billId + " not found");
+        }throw new ResourceNotFoundException("Bill with ID " + billId + " not found");
     }
 
     private List<Bill> findBillsByAccountId(Long accountId) {
@@ -97,8 +88,7 @@ public class BillController {
             if (bill.getAccount().getId().equals(accountId)) {
                 accountBills.add(bill);
             }
-        }
-        return accountBills;
+        }return accountBills;
     }
 
     private List<Bill> findBillsByCustomerId(Long customerId) {
@@ -107,8 +97,7 @@ public class BillController {
             if (bill.getCustomer().getId().equals(customerId)) {
                 customerBills.add(bill);
             }
-        }
-        return customerBills;
+        }return customerBills;
     }
 
     private Bill findBillById(Long billId) {
@@ -117,7 +106,6 @@ public class BillController {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Bill with ID " + billId + " not found"));
     }
-
     private Long generateBillId() {
         return Long.valueOf(bills.size() + 1);
     }
