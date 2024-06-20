@@ -66,7 +66,7 @@ public class WithdrawalController {
     }
 
 
-    @GetMapping(value="/accounts/{accountId}/withrdawals")
+    @GetMapping(value="/accounts/{accountId}/withdrawals")
     public ResponseEntity<Iterable<Withdrawal>> getAllWithdrawals(@PathVariable Long accountId) {
         verifyAccountExists(accountId);
         Iterable<Withdrawal> withdrawals = withdrawalService.getAllWithdrawals();
