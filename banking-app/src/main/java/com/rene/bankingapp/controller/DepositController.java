@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class DepositController {
 
-    @Autowired
-    private DepositService depositService;
+
+@Autowired
+private DepositService depositService;
 
 
     @GetMapping("/accounts/{accountId}/deposits")

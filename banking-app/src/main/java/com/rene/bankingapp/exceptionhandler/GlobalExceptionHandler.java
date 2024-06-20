@@ -1,6 +1,7 @@
 package com.rene.bankingapp.exceptionhandler;
 
 import com.rene.bankingapp.exceptions.*;
+import com.rene.bankingapp.exceptions.IllegalArgumentException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -140,5 +141,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error(HttpMessageNotReadableException.class.getName() + ": " + ex.getMessage() + ".");
 
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setCode(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

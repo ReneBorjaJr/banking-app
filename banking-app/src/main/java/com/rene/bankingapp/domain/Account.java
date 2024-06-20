@@ -10,29 +10,37 @@ import jakarta.validation.constraints.Size;
 import java.util.Set;
 
 @Entity
+@Table(name = "ACCOUNT")
 public class Account {
+
  @Id
- @GeneratedValue
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
  @Column(name = "ACCOUNT_ID")
  private Long id;
- @NotBlank
+
+ @NotNull
  @Enumerated(EnumType.STRING)
+ @Column(name = "ACCOUNT_TYPE")
  private AccountType type;
+
  @NotBlank
  @Size(min = 3, max = 20)
+ @Column(name = "ACCOUNT_NICKNAME")
  private String nickname;
+
  @Min(0)
- @Column(name = "member_points")
+ @Column(name = "ACCOUNT_REWARDS")
  private Integer rewards;
+
  @Min(0)
+ @Column(name = "ACCOUNT_BALANCE")
  private Double balance;
+
  @NotNull
- @ManyToOne(fetch = FetchType.LAZY)
+ @ManyToOne(fetch = FetchType.EAGER)
+ @JoinColumn(name = "CUSTOMER_ID")
  private Customer customer;
 
-// @OneToMany(cascade = CascadeType.ALL)
-// @JoinColumn(name="ACCOUNT_ID")
-// private Set<Deposit> deposits;
 
  public Long getId() {
   return id;
@@ -42,11 +50,11 @@ public class Account {
   this.id = id;
  }
 
- public @NotBlank AccountType getType() {
+ public AccountType getType() {
   return type;
  }
 
- public void setType(@NotBlank AccountType type) {
+ public void setType(AccountType type) {
   this.type = type;
  }
 
@@ -81,13 +89,4 @@ public class Account {
  public void setCustomer(Customer customer) {
   this.customer = customer;
  }
-
-// public Set<Deposit> getDeposits() {
-//  return deposits;
-// }
-
-// public void setDeposits(Set<Deposit> deposits) {
-//  this.deposits = deposits;
-// }
-
 }

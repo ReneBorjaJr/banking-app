@@ -159,7 +159,10 @@ public class DepositService {
 
         // delete deposit logic
         verifyDepositExists(depositId);
-        accountRepository.deleteById(depositId);
+        depositRepository.deleteById(depositId);
+
+        // log
+        log.info("Deposit with Id: " + depositId + " deleted successfully.");
 
         // log
         log.info("Deposit with Id: " + depositId + " deleted successfully.");
@@ -237,7 +240,7 @@ public class DepositService {
         verifyDepositExists(depositToUpdateWith.getDepositId());
 
         // verify the new deposit type is Deposit or P2P
-        if (!depositToUpdateWith.getType().equals("Deposit") || !depositToUpdateWith.getType().equals("P2P")){
+        if (!depositToUpdateWith.getType().equals("Deposit") && !depositToUpdateWith.getType().equals("P2P")){
             throw new TransactionMismatchException("Transaction type: " + depositToUpdateWith.getType() + " is not valid for this operation.");
         }
 
@@ -258,16 +261,16 @@ public class DepositService {
     public ResponseEntity<?> processDepositTransaction(Long accountId, @Null Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
 
         // check deposit medium
-            // if Balance medium
-            if (depositMedium.equals(Medium.BALANCE)){
-                // make Balance deposit
-                return createBalanceDeposit(accountId, depositAmount, depositDescription);
+        // if Balance medium
+        if (depositMedium.equals(Medium.BALANCE)){
+            // make Balance deposit
+            return createBalanceDeposit(accountId, depositAmount, depositDescription);
 
-            } else {
-                // if rewards medium
-                // make rewards deposit
-                return createRewardsDeposit(accountId, depositAmount, depositDescription);
-            }
+        } else {
+            // if rewards medium
+            // make rewards deposit
+            return createRewardsDeposit(accountId, depositAmount, depositDescription);
+        }
     }
 
     public ResponseEntity<?> processP2pTransaction(Long accountId, @NotNull Long payeeId, Medium depositMedium, Double depositAmount, String depositDescription){
