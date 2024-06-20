@@ -2,11 +2,38 @@ package com.rene.bankingapp.domain;
 
 import com.rene.bankingapp.domain.Address;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.Set;
+
+import com.rene.bankingapp.domain.Address;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.Set;
 
 @Entity
+@Table(name = "CUSTOMER")
 public class Customer {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "CUSTOMER_ID")
+    private Long id;
+
+    @NotEmpty
+    @Column(name = "FIRST_NAME")
+    private String firstName;
+
+    @NotEmpty
+    @Column(name = "LAST_NAME")
+    private String lastName;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @NotEmpty
+    @JoinColumn(name = "CUSTOMER_ID")
+    private Set<Address> address;
+
     public Customer() {
     }
 
@@ -17,14 +44,6 @@ public class Customer {
         this.address = address;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String firstName;
-    private String lastName;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Address> address;
     public Long getId() {
         return id;
     }
