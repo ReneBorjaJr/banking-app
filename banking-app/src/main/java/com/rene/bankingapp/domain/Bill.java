@@ -12,31 +12,41 @@ public class Bill {
     private Long id;
 
     @NotNull
+    @Column(name = "status")
     private String status;
 
     @NotNull
+    @Column(name = "payee")
     private String payee;
+
     @NotNull
+    @Column(name = "nickname")
     private String nickname;
 
     @NotNull
+    @Column(name = "creation_date")
     private Date creationDate;
+
     @NotNull
+    @Column(name = "payment_date")
     private Date paymentDate;
+
     @NotNull
+    @Column(name = "recurring_date")
     private Integer recurringDate;
+
     @NotNull
+    @Column(name = "upcoming_payment_date")
     private Date upcomingPaymentDate;
 
     @NotNull
+    @Column(name = "payment_amount")
     private Double paymentAmount;
 
     @NotNull
+    @Column(name = "account_id")
     private Long accountId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
 
     @NotNull
     public Bill() {
