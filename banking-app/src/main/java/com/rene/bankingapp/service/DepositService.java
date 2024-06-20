@@ -2,7 +2,6 @@ package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Account;
 import com.rene.bankingapp.domain.Deposit;
-import com.rene.bankingapp.domain.enums.DepositStatus;
 import com.rene.bankingapp.domain.enums.Medium;
 import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.exceptions.*;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -165,7 +163,7 @@ public class DepositService {
         depositRepository.deleteById(depositId);
 
         // log
-        log.info("Deposit with Id (" + depositId + ") deleted successfully.");
+        log.info("Deposit with Id: " + depositId + " deleted successfully.");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
