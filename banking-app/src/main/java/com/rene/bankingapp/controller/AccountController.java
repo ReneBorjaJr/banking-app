@@ -16,6 +16,7 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
+
     @RequestMapping(value = "/accounts", method = RequestMethod.GET)
     public ResponseEntity<?> getAllAccounts() {
         return accountService.getAllAccounts();
@@ -26,14 +27,17 @@ public class AccountController {
         return accountService.createAccount(account, customerId);
     }
 
+
     @RequestMapping(value = "/accounts/{accountId}", method = RequestMethod.GET)
     public ResponseEntity<?> getAccountById(@PathVariable Long accountId) {
         return accountService.getAccountById(accountId);
     }
 
+
     @RequestMapping(value = "/accounts/{accountId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateAccount(@RequestBody @Valid Account account, @PathVariable Long accountId) {
         return accountService.updateAccount(account, accountId);
+
     }
 
     @RequestMapping(value = "/accounts/{accountId}", method = RequestMethod.DELETE)

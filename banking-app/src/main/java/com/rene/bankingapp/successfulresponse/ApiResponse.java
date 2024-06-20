@@ -52,5 +52,5 @@ public class ApiResponse<T> {
     public void setData(List<T> data) {
         this.data = data;
     }
-
 }
+

@@ -12,23 +12,30 @@ public class Bill {
     private Long id;
 
     @NotNull
+    @Column(name = "status")
     private String status;
 
     @NotNull
+    @Column(name = "payee")
     private String payee;
+
     @NotNull
     private String nickname;
 
     @NotNull
+    @Column(name = "creation_date")
     private Date creationDate;
+
     @NotNull
     private Date paymentDate;
     @NotNull
     private Integer recurringDate;
     @NotNull
+
     private Date upcomingPaymentDate;
 
     @NotNull
+    @Column(name = "payment_amount")
     private Double paymentAmount;
 
 //    @NotNull
@@ -40,6 +47,7 @@ public class Bill {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
+
 
     @NotNull
     public Bill() {
@@ -57,7 +65,6 @@ public class Bill {
         this.status = status;
         this.upcomingPaymentDate = upcomingPaymentDate;
     }
-
     public Long getId() {
         return id;
     }
@@ -130,19 +137,11 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-//    public Long getAccountId() {
-//        return accountId;
-//    }
-//
-//    public void setAccountId(Long accountId) {
-//        this.accountId = accountId;
-//    }
-
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }

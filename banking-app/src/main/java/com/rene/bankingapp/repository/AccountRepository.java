@@ -14,3 +14,4 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
     List<Account> findAllByCustomerId(@Param("customerId") Long customerId);
 
 }
+
