@@ -23,7 +23,7 @@ public class BillCreationRequest {
     @NotNull
     private Double paymentAmount;
 
-    @NotEmpty
+    @NotNull
     private Long accountId;
 
     public BillStatus getBillStatus() {
