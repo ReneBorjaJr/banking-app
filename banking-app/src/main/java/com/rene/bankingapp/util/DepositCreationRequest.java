@@ -5,11 +5,10 @@ import com.rene.bankingapp.domain.enums.TransactionType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public class DepositRequestFormat {
+public class DepositCreationRequest {
 
     @NotNull
     private TransactionType depositType;
-
 
     private Long payeeId;
 

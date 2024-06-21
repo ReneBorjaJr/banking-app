@@ -1,7 +1,9 @@
 package com.rene.bankingapp.domain;
 
+import com.rene.bankingapp.domain.enums.BillStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
+
 import java.util.Date;
 
 @Entity
@@ -11,52 +13,42 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotEmpty
     private String status;
-
-    @NotNull
+    @NotEmpty
     private String payee;
-    @NotNull
+    @NotEmpty
     private String nickname;
 
-    @NotNull
-    private Date creationDate;
-    @NotNull
-    private Date paymentDate;
-    @NotNull
+    @NotEmpty
+    private String creationDate;
+
+    @NotEmpty
+    private String paymentDate;
+
+    @Min(1)
+    @Max(31)
     private Integer recurringDate;
-    @NotNull
-    private Date upcomingPaymentDate;
+
+    private String upcomingPaymentDate;
 
     @NotNull
+    @Positive
     private Double paymentAmount;
 
-//    @NotNull
+  //    @NotNull
 //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "account_id")
 //    private Long accountId;
+  
+//    @NotNull
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "account_id")
+//    private Account account;
+
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    @NotNull
-    public Bill() {
-    }
-
-    public Bill(Account account, Date creationDate, Long id, String nickname, String payee, Double paymentAmount, Date paymentDate, Integer recurringDate, String status, Date upcomingPaymentDate) {
-        this.account = account;
-        this.creationDate = creationDate;
-        this.id = id;
-        this.nickname = nickname;
-        this.payee = payee;
-        this.paymentAmount = paymentAmount;
-        this.paymentDate = paymentDate;
-        this.recurringDate = recurringDate;
-        this.status = status;
-        this.upcomingPaymentDate = upcomingPaymentDate;
-    }
+    private Long accountId;
 
     public Long getId() {
         return id;
@@ -90,19 +82,19 @@ public class Bill {
         this.nickname = nickname;
     }
 
-    public Date getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getPaymentDate() {
+    public String getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(String paymentDate) {
         this.paymentDate = paymentDate;
     }
 
@@ -114,11 +106,11 @@ public class Bill {
         this.recurringDate = recurringDate;
     }
 
-    public Date getUpcomingPaymentDate() {
+    public String getUpcomingPaymentDate() {
         return upcomingPaymentDate;
     }
 
-    public void setUpcomingPaymentDate(Date upcomingPaymentDate) {
+    public void setUpcomingPaymentDate(String upcomingPaymentDate) {
         this.upcomingPaymentDate = upcomingPaymentDate;
     }
 
@@ -130,19 +122,11 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-//    public Long getAccountId() {
-//        return accountId;
-//    }
-//
-//    public void setAccountId(Long accountId) {
-//        this.accountId = accountId;
-//    }
-
-    public Account getAccount() {
-        return account;
+    public Long getAccountId() {
+        return accountId;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }

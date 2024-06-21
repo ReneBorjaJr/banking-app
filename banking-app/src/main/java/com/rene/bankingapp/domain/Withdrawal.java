@@ -14,7 +14,7 @@ public class Withdrawal {
     @GeneratedValue
     @NotNull
     private Long id;
-
+    @NotNull
     private TransactionType type;
 //    @NotEmpty
     private String transaction_Date = "2017-07-25";
@@ -25,7 +25,6 @@ public class Withdrawal {
 //    @NotNull
     private String medium;
     @NotNull
-//    @NotNull
     private Double amount;
     private String description;
 
@@ -96,10 +95,5 @@ public class Withdrawal {
     public String toString(){
         return description;
     }
-
-
-
-
-
 
 }
