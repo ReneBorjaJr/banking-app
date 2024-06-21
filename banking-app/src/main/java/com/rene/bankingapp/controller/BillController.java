@@ -38,7 +38,7 @@ public class BillController {
     public List<Bill> getBillsForCustomer(@PathVariable Long customerId) {
         List<Bill> customerBills = new ArrayList<>();
         for (Bill bill : bills) {
-            if (bill.getAccount().getCustomer().getId().equals(customerId)) {
+            if (bill.getAccount().getCustomerId().equals(customerId)) {
                 customerBills.add(bill);
             }
         }

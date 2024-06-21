@@ -60,6 +60,9 @@ public class CustomerService {
 
     public ResponseEntity<?> updateCustomer(Long id, Customer customer) {
         verifyCustomerExists(id);
+        if (!id.equals(customer.getId())) {
+            throw new ResourceNotFoundException("Customer with id " + id + " does not exist");
+        }
         if (customer == null) {
             throw new InvalidInputException("Customer object cannot be null");
         }
@@ -95,13 +98,12 @@ public class CustomerService {
         ApiResponse<Customer> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.OK.value());
         successfulResponse.setMessage("Success");
-        Customer customer = accountRepository.findById(accountId).orElseThrow(() ->
-                new ResourceNotFoundException("Account with id " + accountId + " not found")
-        ).getCustomer();
 
-        if (customer == null) {
-            throw new ResourceNotFoundException("Customer associated with account id " + accountId + " not found");
-        }
+        Account account = accountRepository.findById(accountId).get();
+
+        Long customerId = account.getCustomerId();
+        verifyCustomerExists(customerId);
+        Customer customer = customerRepository.findById(customerId).get();
 
         List<Customer> listOfCustomers = new ArrayList<>();
         listOfCustomers.add(customer);
