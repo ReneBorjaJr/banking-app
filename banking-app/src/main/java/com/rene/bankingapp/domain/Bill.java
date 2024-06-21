@@ -36,15 +36,16 @@ public class Bill {
     @Positive
     private Double paymentAmount;
 
-//    @NotNull
+  //    @NotNull
 //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "account_id")
 //    private Long accountId;
-
+  
 //    @NotNull
 //    @ManyToOne(fetch = FetchType.EAGER)
 //    @JoinColumn(name = "account_id")
 //    private Account account;
+
 
     @NotNull
     private Long accountId;

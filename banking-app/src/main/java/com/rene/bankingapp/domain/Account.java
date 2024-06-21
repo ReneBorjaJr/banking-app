@@ -37,9 +37,8 @@ public class Account {
  private Double balance;
 
  @NotNull
- @ManyToOne(fetch = FetchType.EAGER)
- @JoinColumn(name = "CUSTOMER_ID")
- private Customer customer;
+ @Column(name = "CUSTOMER_ID")
+ private Long customerId;
 
 
  public Long getId() {
@@ -82,11 +81,11 @@ public class Account {
   this.balance = balance;
  }
 
- public Customer getCustomer() {
-  return customer;
+ public @NotNull Long getCustomerId() {
+  return customerId;
  }
 
- public void setCustomer(Customer customer) {
-  this.customer = customer;
+ public void setCustomerId(@NotNull Long customerId) {
+  this.customerId = customerId;
  }
 }
