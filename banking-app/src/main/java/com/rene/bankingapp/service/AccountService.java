@@ -79,6 +79,7 @@ public class AccountService {
 
     public ResponseEntity<?> createAccount(Account account, Long customerId) {
         verifyCustomer(customerId);
+        verifyAccountIdMatchesCustomerId(customerId, account);
         account = accountRepository.save(account);
         ApiResponse<Account> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.CREATED.value());
@@ -130,6 +131,12 @@ public class AccountService {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isEmpty()) {
             throw new ResourceNotFoundException("Customer with id " + customerId + " not found");
+        }
+    }
+
+    private void verifyAccountIdMatchesCustomerId(Long customerId, Account account) {
+        if (!customerId.equals(account.getCustomerId())) {
+            throw new ResourceNotFoundException("Customer id: " + customerId + " does not match the entered customer id: " + account.getCustomerId());
         }
     }
 }

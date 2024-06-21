@@ -33,6 +33,12 @@ public class BillController {
 
     @GetMapping("/customers/{customerId}/bills")
     public List<Bill> getBillsForCustomer(@PathVariable Long customerId) {
+
+        List<Bill> customerBills = new ArrayList<>();
+        for (Bill bill : bills) {
+            if (bill.getAccount().getCustomerId().equals(customerId)) {
+                customerBills.add(bill);
+            }
         List<Bill> customerBills = findBillsByCustomerId(customerId);
         if (customerBills.isEmpty()) {
             throw new ResourceNotFoundException("No bills found for customer with ID: " + customerId);
