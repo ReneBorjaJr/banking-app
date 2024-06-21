@@ -62,6 +62,7 @@ public class WithdrawalService {
         return new ResponseEntity<>(listOfWithdrawals, HttpStatus.OK);
     }
 
+
     public ResponseEntity<?> getWithdrawalById(Long withdrawalId) {
         verifyWithdrawalExists(withdrawalId);
         Optional<Withdrawal> withdrawal = withdrawalRepository.findById(withdrawalId);
@@ -105,6 +106,7 @@ public class WithdrawalService {
         successfulResponse.setMessage("Updated withdrawal successfully");
         successfulResponse.setData(listOfWithdrawal);
         return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+
     }
 
     public ResponseEntity<?> deleteWithdrawal(Long withdrawalId) {
