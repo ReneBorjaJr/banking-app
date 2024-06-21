@@ -32,15 +32,20 @@ public class WithdrawalService {
     public ResponseEntity<?> createWithdrawal(Withdrawal withdrawal, Long accountId) {
         verifyAccountExists(accountId);
         verifyNotDeposit(withdrawal.getType());
-        withdrawal = withdrawalRepository.save(withdrawal);
+        verifySufficientFunds(accountId, withdrawal.getAmount());
         if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
             Double newAccountBalance = accountRepository.findById(accountId).get().getBalance() - withdrawal.getAmount();
-            accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            if (withdrawal.getStatus().equalsIgnoreCase("executed")) {
+                accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            }
         }
         if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
             Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() - withdrawal.getAmount().intValue();
-            accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            if (withdrawal.getStatus().equalsIgnoreCase("executed")) {
+                accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            }
         }
+        withdrawal = withdrawalRepository.save(withdrawal);
         ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
         List<Withdrawal> listOfWithdrawals = new ArrayList<>();
         listOfWithdrawals.add(withdrawal);
@@ -59,8 +64,9 @@ public class WithdrawalService {
         successfulResponse.setCode(HttpStatus.OK.value());
         successfulResponse.setMessage("All withdrawals retrieved successfully");
         successfulResponse.setData(listOfWithdrawals);
-        return new ResponseEntity<>(listOfWithdrawals, HttpStatus.OK);
+        return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
     }
+
 
     public ResponseEntity<?> getWithdrawalById(Long withdrawalId) {
         verifyWithdrawalExists(withdrawalId);
@@ -75,37 +81,98 @@ public class WithdrawalService {
     }
 
     public ResponseEntity<?> updateWithdrawal(Withdrawal withdrawal, Long withdrawalId) {
-        verifyWithdrawalExists(withdrawalId);
-        verifySufficientFunds(withdrawalId, withdrawal.getAmount());
         Double dbAmount = withdrawalRepository.findById(withdrawalId).get().getAmount();
         Double bodyAmount = withdrawal.getAmount();
         Long accountId = withdrawalRepository.findById(withdrawalId).get().getPayer_id();
         Double balance = accountRepository.findById(accountId).get().getBalance();
+        Integer rewards = accountRepository.findById(accountId).get().getRewards();
         Double newBalance;
+        Integer newRewards;
         String dbMedium = withdrawalRepository.findById(withdrawalId).get().getMedium();
         String bodyMedium = withdrawal.getMedium();
-        if (!dbMedium.equalsIgnoreCase(bodyMedium)) {
-            deleteWithdrawal(withdrawalId);
-            createWithdrawal(withdrawal, accountId);
-            return new ResponseEntity<>(HttpStatus.OK);
+        String dbStatus = withdrawalRepository.findById(withdrawalId).get().getStatus();
+        String bodyStatus = withdrawal.getStatus();
+
+        verifyWithdrawalExists(withdrawalId);
+        verifySufficientFunds(accountId, withdrawal.getAmount());
+
+        if (!bodyStatus.equalsIgnoreCase(dbStatus)) {
+            if (bodyStatus.equalsIgnoreCase("pending")) {
+                if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance + dbAmount;
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards + dbAmount.intValue();
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
+            if (bodyStatus.equalsIgnoreCase("executed")) {
+                if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance - bodyAmount;
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards - bodyAmount.intValue();
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
         }
+
+        if (!dbMedium.equalsIgnoreCase(bodyMedium)) {
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                Double newAccountBalance = accountRepository.findById(accountId).get().getBalance() + dbAmount;
+                accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() + dbAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            }
+//            createWithdrawal(withdrawal, accountId);
+            withdrawal = withdrawalRepository.save(withdrawal);
+            ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
+            List<Withdrawal> listOfWithdrawals = new ArrayList<>();
+            listOfWithdrawals.add(withdrawal);
+            successfulResponse.setCode(HttpStatus.OK.value());
+            successfulResponse.setMessage("Withdrawal updated");
+            successfulResponse.setData(listOfWithdrawals);
+            return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+//            withdrawalService.getWithdrawal(withdrawalId).get().setId(withdrawalId);
+        }
+
         if (dbAmount > bodyAmount) {
-            newBalance = balance + (dbAmount - bodyAmount);
-            accountRepository.findById(accountId).get().setBalance(newBalance);
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                newBalance = balance + (dbAmount - bodyAmount);
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                newRewards = rewards + (dbAmount.intValue() - bodyAmount.intValue());
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
         }
         if (dbAmount < bodyAmount) {
-            newBalance = balance - (bodyAmount - dbAmount);
-            accountRepository.findById(accountId).get().setBalance(newBalance);
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                newBalance = balance - (bodyAmount - dbAmount);
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                newRewards = rewards - (bodyAmount.intValue() - dbAmount.intValue());
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
         }
-        ResponseEntity<?> newWithdrawal = createWithdrawal(withdrawal, withdrawalId);
-        List<Withdrawal> listOfWithdrawal = new ArrayList<>();
-        listOfWithdrawal.add((Withdrawal) newWithdrawal.getBody());
+//        withdrawalService.delete(withdrawalId);
+//        withdrawalService.createWithdrawal(withdrawal);
+        withdrawal = withdrawalRepository.save(withdrawal);
         ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.OK.value());
         successfulResponse.setMessage("Updated withdrawal successfully");
+        List<Withdrawal> listOfWithdrawal = new ArrayList<>();
+        listOfWithdrawal.add(withdrawal);
         successfulResponse.setData(listOfWithdrawal);
         return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+
     }
+
 
     public ResponseEntity<?> deleteWithdrawal(Long withdrawalId) {
         verifyWithdrawalExists(withdrawalId);
