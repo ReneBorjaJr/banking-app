@@ -338,7 +338,7 @@ public class BillService {
 
     private LocalDate calculateUpcomingPaymentDate(Integer recurringDate, LocalDate creationDate){
 
-        LocalDate upcomingPaymentDate = LocalDate.parse("0000-00-00");
+        LocalDate upcomingPaymentDate = LocalDate.parse("0000-01-01");
         try {
             upcomingPaymentDate = YearMonth.from(creationDate).plusMonths(1).atDay(recurringDate);
         } catch (DateTimeException e){
