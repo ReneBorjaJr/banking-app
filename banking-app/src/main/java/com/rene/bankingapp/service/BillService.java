@@ -327,7 +327,7 @@ public class BillService {
             throw new InvalidInputException("Can not update bill to recurring without specified recurring date.");
         }
 
-        if (billToUpdateWith.getStatus().equals("CANCELED") || billToUpdateWith.getStatus().equals("COMPLETED")){
+        if (billToUpdateWith.getStatus().equals("CANCELED") || billToUpdateWith.getStatus().equals("COMPLETED") && billToUpdateWith.getUpcomingPaymentDate() != null){
             logger.warn("Status for updated bill is either cancelled or completed, and upcoming payment date is not null.\n This field should be left null for this action, and will be overwritten by the system.");
         }
 
