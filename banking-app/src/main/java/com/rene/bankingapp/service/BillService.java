@@ -77,7 +77,7 @@ public class BillService {
 
         List<Bill> listForResponse = new ArrayList<>();
         listForResponse.add(bill);
-        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, listForResponse);
+        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "Bill with Id (" + billId + ") retrieved successfully.", listForResponse);
 
         logger.info("Bill with Id (" + billId + ") retrieved successfully.");
 
@@ -108,7 +108,8 @@ public class BillService {
 
         }
 
-        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "All Bills belonging to Customer with Id (" + customerId + ") retrieved successfully.");
+        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "All Bills belonging to Customer with Id (" + customerId + ") retrieved successfully.", allOfTheBills);
+        logger.info("All Bills belonging to Customer with Id (" + customerId + ") retrieved successfully.");
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -197,6 +198,7 @@ public class BillService {
         verifyProperBillToUpdate(billId, billToUpdateWith);
 
         String billStatus = billToUpdateWith.getStatus();
+
         if (billStatus.equals("RECURRING")){
 
             String unparsedCreationDate = billToUpdateWith.getCreationDate();
@@ -210,12 +212,22 @@ public class BillService {
             billToUpdateWith.setUpcomingPaymentDate(upcomingPaymentDate.toString());
         }
 
+        if (billStatus.equals("CANCELED")){
+
+            billToUpdateWith.setUpcomingPaymentDate("Cancelled Bill. No upcoming payment.");
+
+            if (!billToUpdateWith.getPaymentDate().equals("Awaiting payment.")){
+                billToUpdateWith.setPaymentDate("Canceled bill. Already payed and requires refund.");
+            }
+        }
+
+
         billRepository.save(billToUpdateWith);
 
         List<Bill> listForResponse = new ArrayList<>();
         listForResponse.add(billToUpdateWith);
 
-        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "Accepted Bill modification for bill with Id (" + billId + ").");
+        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "Accepted Bill modification for bill with Id (" + billId + ").", listForResponse);
 
         logger.info("Accepted Bill modification for bill with Id (" + billId + ").");
 
@@ -254,6 +266,7 @@ public class BillService {
     private void verifyAccountExists(Long accountId){
 
         Optional<Account> account = accountRepository.findById(accountId);
+
         if(account.isEmpty()){
             throw new ResourceNotFoundException("Account with Id (" + accountId + ") not found.");
         }
@@ -261,6 +274,7 @@ public class BillService {
 
     private void verifyBillExists(Long billId) {
         Optional<Bill> deposit = billRepository.findById(billId);
+
         if(deposit.isEmpty()){
             throw new ResourceNotFoundException("Bill with Id (" + billId + ") not found.");
         }
@@ -270,6 +284,7 @@ public class BillService {
     private void verifyCustomerExists(Long customerId) {
 
         Optional<Customer> customer = customerRepository.findById(customerId);
+
         if(customer.isEmpty()){
             throw new ResourceNotFoundException("Customer with Id (" + customerId + ") not found.");
         }
@@ -308,11 +323,15 @@ public class BillService {
         }
 
         if (!originalBill.getStatus().equals("PENDING") && !originalBill.getStatus().equals("RECURRING")){
-            throw new InvalidInputException("Can not update deposit with status (" + billToUpdateWith.getStatus() + ").");
+            throw new InvalidInputException("Can not update bill with status (" + billToUpdateWith.getStatus() + ").");
         }
 
         if (!billToUpdateWith.getNickname().equals(originalBill.getNickname())){
             throw new ConflictException("Updated nickname must match previous bill nickname.");
+        }
+
+        if(!billToUpdateWith.getPayee().equals(originalBill.getPayee())){
+            throw new InvalidInputException("Can not update bill with different payee from original payee.");
         }
 
         if (!billToUpdateWith.getCreationDate().equals(originalBill.getCreationDate())){
@@ -339,11 +358,13 @@ public class BillService {
     private LocalDate calculateUpcomingPaymentDate(Integer recurringDate, LocalDate creationDate){
 
         LocalDate upcomingPaymentDate = LocalDate.parse("0000-01-01");
+
         try {
             upcomingPaymentDate = YearMonth.from(creationDate).plusMonths(1).atDay(recurringDate);
         } catch (DateTimeException e){
             calculateUpcomingPaymentDate(recurringDate - 1, creationDate);
         }
+
         return upcomingPaymentDate;
     }
 }
