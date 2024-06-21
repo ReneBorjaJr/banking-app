@@ -43,6 +43,8 @@ public class Deposit {
     @Column(name="deposit_description")
     private String description;
 
+    @NotNull
+    @Column(name="account_id")
     private Long accountId;
 
 

@@ -8,7 +8,7 @@ import com.rene.bankingapp.exceptions.*;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.repository.DepositRepository;
 import com.rene.bankingapp.successfulresponse.ApiResponse;
-import com.rene.bankingapp.util.DepositRequestFormat;
+import com.rene.bankingapp.util.DepositCreationRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -85,14 +85,14 @@ public class DepositService {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> startCreateDepositProcess(Long accountId, DepositRequestFormat depositRequestFormat) {
+    public ResponseEntity<?> startCreateDepositProcess(Long accountId, DepositCreationRequest depositCreationRequest) {
 
         // extract variables from depositRequestFormat
-        TransactionType depositType = depositRequestFormat.getDepositType();
-        Long payeeId = depositRequestFormat.getPayeeId();
-        Medium depositMedium = depositRequestFormat.getDepositMedium();
-        Double depositAmount = depositRequestFormat.getDepositAmount();
-        String depositDescription = depositRequestFormat.getDepositDescription();
+        TransactionType depositType = depositCreationRequest.getDepositType();
+        Long payeeId = depositCreationRequest.getPayeeId();
+        Medium depositMedium = depositCreationRequest.getDepositMedium();
+        Double depositAmount = depositCreationRequest.getDepositAmount();
+        String depositDescription = depositCreationRequest.getDepositDescription();
 
 
         // if depositDescription is null, change it to "No description given"
@@ -148,10 +148,10 @@ public class DepositService {
         List<Deposit> listForResponse = new ArrayList<>();
         listForResponse.add(updatedDeposit);
 
-        ApiResponse<?> apiResponse = new ApiResponse<>(200, "Accepted deposit modification for deposit with Id (" + depositId + ") .", listForResponse);
+        ApiResponse<Deposit> apiResponse = new ApiResponse<>(200, "Accepted deposit modification for deposit with Id (" + depositId + ") .", listForResponse);
 
         // log
-        log.info("Accepted deposit modification for deposit with Id (" + depositId + ") .");
+        log.info("Accepted deposit modification for deposit with Id (" + depositId + ").");
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -163,7 +163,7 @@ public class DepositService {
         depositRepository.deleteById(depositId);
 
         // log
-        log.info("Deposit with Id: " + depositId + " deleted successfully.");
+        log.info("Deposit with Id (" + depositId + ") deleted successfully.");
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -218,7 +218,7 @@ public class DepositService {
 
         // validate that deposit status is pending
         if (!oldDeposit.getStatus().equals("Pending")){
-            throw new ConflictException("Can not update deposit with status (" + oldDeposit.getStatus() + ").");
+            throw new InvalidInputException("Can not update deposit with status (" + oldDeposit.getStatus() + ").");
         }
 
         // accountId's match
