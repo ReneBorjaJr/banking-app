@@ -60,10 +60,6 @@ public class CustomerService {
 
     public ResponseEntity<?> updateCustomer(Long id, Customer customer) {
         verifyCustomerExists(id);
-        if (customer == null) {
-            throw new InvalidInputException("Customer object cannot be null");
-        }
-
         customer = customerRepository.save(customer);
         ApiResponse<Customer> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.OK.value());
@@ -76,10 +72,6 @@ public class CustomerService {
 
 
     public ResponseEntity<?> createCustomer(Customer customer) {
-        if (customer == null) {
-            throw new InvalidInputException("Customer object cannot be null");
-        }
-
         customer = customerRepository.save(customer);
         ApiResponse<Customer> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.OK.value());
