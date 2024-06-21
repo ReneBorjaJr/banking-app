@@ -1,13 +1,9 @@
 package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Deposit;
-import com.rene.bankingapp.domain.enums.Medium;
-import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.service.DepositService;
-import com.rene.bankingapp.util.DepositRequestFormat;
+import com.rene.bankingapp.util.DepositCreationRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -40,9 +36,9 @@ private DepositService depositService;
 
 
     @PostMapping("/accounts/{accountId}/deposits")
-    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @Valid @RequestBody DepositRequestFormat depositRequestFormat){
+    public ResponseEntity<?> createADeposit(@PathVariable Long accountId, @Valid @RequestBody DepositCreationRequest depositCreationRequest){
 
-        return depositService.startCreateDepositProcess(accountId, depositRequestFormat);
+        return depositService.startCreateDepositProcess(accountId, depositCreationRequest);
 
     }
 
