@@ -31,16 +31,14 @@ public class Bill {
     @NotNull
     private Double paymentAmount;
 
-//    @NotNull
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "account_id")
-//    private Long accountId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
     @NotNull
     public Bill() {
     }
@@ -130,19 +128,19 @@ public class Bill {
         this.paymentAmount = paymentAmount;
     }
 
-//    public Long getAccountId() {
-//        return accountId;
-//    }
-//
-//    public void setAccountId(Long accountId) {
-//        this.accountId = accountId;
-//    }
-
     public Account getAccount() {
         return account;
     }
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
