@@ -11,9 +11,8 @@ import java.util.List;
 @Repository
 public interface AccountRepository extends CrudRepository<Account, Long> {
 
-    // Find account by customerId
-    @Query("SELECT a FROM Account a WHERE a.customerId = :customerId")
-    List<Account> findAllByCustomerId(@Param("customerId") Long customerId);
 
+    @Query(value = "SELECT * FROM ACCOUNT WHERE CUSTOMER_ID = ?1", nativeQuery = true)
+    List<Account> findAllByCustomerId(Long customerId);
 
 }
