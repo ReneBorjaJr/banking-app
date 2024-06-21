@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface BillRepository extends JpaRepository<Bill, Long> {
 
-    @Query(value="SELECT * FROM BILL WHERE ACCOUNT_ID = ?1")
+    @Query(value="SELECT * FROM BILL WHERE ACCOUNT_ID = ?1", nativeQuery = true)
     List<Bill> findByAccountId(Long accountId);
 }

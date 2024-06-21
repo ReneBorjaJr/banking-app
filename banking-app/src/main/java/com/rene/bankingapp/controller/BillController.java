@@ -118,7 +118,7 @@ public class BillController {
 //    }
 //}
 
-    @DeleteMapping("/bills/{billId")
+    @DeleteMapping("/bills/{billId}")
     public ResponseEntity<?> deleteBill(@PathVariable Long billId){
 
         return billService.deleteABill(billId);
