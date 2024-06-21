@@ -51,9 +51,9 @@ public class BillService {
 
         List<Bill> allBills = billRepository.findByAccountId(accountId);
 
-        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "All deposits with accountId (" + accountId + ") retrieved successfully.", allBills);
+        ApiResponse<Bill> apiResponse = new ApiResponse<>(200, "All Bills with accountId (" + accountId + ") retrieved successfully.", allBills);
 
-        logger.info("All deposits with accountId (" + accountId + ") retrieved successfully.");
+        logger.info("All Bills with accountId (" + accountId + ") retrieved successfully.");
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -164,7 +164,7 @@ public class BillService {
 
         logger.info("Created the bill and added it to the account");
 
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
 
     }
 
@@ -218,6 +218,8 @@ public class BillService {
 
             if (!billToUpdateWith.getPaymentDate().equals("Awaiting payment.")){
                 billToUpdateWith.setPaymentDate("Canceled bill. Already payed and requires refund.");
+            } else {
+                billToUpdateWith.setPaymentDate("Canceled bill. No payment needed");
             }
         }
 
