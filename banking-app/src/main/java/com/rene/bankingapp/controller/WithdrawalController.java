@@ -2,13 +2,11 @@ package com.rene.bankingapp.controller;
 
 import com.rene.bankingapp.domain.Account;
 import com.rene.bankingapp.domain.Withdrawal;
-import com.rene.bankingapp.domain.enums.Medium;
 import com.rene.bankingapp.domain.enums.TransactionType;
 import com.rene.bankingapp.exceptions.InsufficientFundsException;
 import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.exceptions.TransactionMismatchException;
 import com.rene.bankingapp.repository.AccountRepository;
-import com.rene.bankingapp.service.AccountService;
 import com.rene.bankingapp.service.WithdrawalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -78,54 +76,114 @@ public class WithdrawalController {
         Optional<Withdrawal> withdrawal = withdrawalService.getWithdrawal(withdrawalId);
         return new ResponseEntity<> (withdrawal, HttpStatus.OK);
     }
-    @PostMapping(value="/accounts/{accountId}/withdrawals")
-    public ResponseEntity<?> createWithdrawal(@RequestBody Withdrawal withdrawal, @PathVariable Long accountId) {
+    @RequestMapping(value="/accounts/{accountId}/withdrawals", method=RequestMethod.POST)
+    public void createWithdrawals(@RequestBody Withdrawal withdrawal, @PathVariable Long accountId) {
         verifyAccountExists(accountId);
         verifyNotDeposit(withdrawal.getType());
-        withdrawal = withdrawalService.createWithdrawal(withdrawal);
-//        withdrawal.getAmount()
-
+        verifySufficientFunds(accountId, withdrawal.getAmount());
         if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
             Double newAccountBalance = accountRepository.findById(accountId).get().getBalance() - withdrawal.getAmount();
-            accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            if(withdrawal.getStatus().equalsIgnoreCase("executed")) {
+                accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            }
         }
         if (withdrawal.getMedium().equalsIgnoreCase("rewards")){
             Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() - withdrawal.getAmount().intValue();
-            accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            if(withdrawal.getStatus().equalsIgnoreCase("executed")) {
+                accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            }
         }
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+        withdrawalService.createWithdrawal(withdrawal);
+
+        new ResponseEntity<>(null, HttpStatus.CREATED);
     }
     @PutMapping(value="/withdrawals/{withdrawalId}")
     public ResponseEntity<?> updateWithdrawal(@RequestBody Withdrawal withdrawal, @PathVariable Long withdrawalId) {
-        verifyWithdrawalExists(withdrawalId);
-        verifySufficientFunds(withdrawalId, withdrawal.getAmount());
+
         Double dbAmount = withdrawalService.getWithdrawal(withdrawalId).get().getAmount();
         Double bodyAmount = withdrawal.getAmount();
         Long accountId = withdrawalService.getWithdrawal(withdrawalId).get().getPayer_id();
         Double balance = accountRepository.findById(accountId).get().getBalance();
+        Integer rewards = accountRepository.findById(accountId).get().getRewards();
         Double newBalance;
+        Integer newRewards;
         String dbMedium = withdrawalService.getWithdrawal(withdrawalId).get().getMedium();
         String bodyMedium = withdrawal.getMedium();
+        String dbStatus = withdrawalService.getWithdrawal(withdrawalId).get().getStatus();
+        String bodyStatus = withdrawal.getStatus();
+
+        verifyWithdrawalExists(withdrawalId);
+        verifySufficientFunds(accountId, withdrawal.getAmount());
+
+        if(!bodyStatus.equalsIgnoreCase(dbStatus)){
+            if(bodyStatus.equalsIgnoreCase("pending")){
+                if(withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance + dbAmount;
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if(withdrawal.getMedium().equalsIgnoreCase("rewards")){
+                    newRewards = rewards + dbAmount.intValue();
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
+            if(bodyStatus.equalsIgnoreCase("executed")){
+                if(withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance - bodyAmount;
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if(withdrawal.getMedium().equalsIgnoreCase("rewards")){
+                    newRewards = rewards - bodyAmount.intValue();
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
+        }
+
         if(!dbMedium.equalsIgnoreCase(bodyMedium)){
-            deleteWithdrawal(withdrawalId);
-            createWithdrawal(withdrawal, accountId);
+            if (withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                Double newAccountBalance = accountRepository.findById(accountId).get().getBalance() + dbAmount;
+                accountRepository.findById(accountId).get().setBalance(newAccountBalance);
+            }
+            if (withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")){
+                Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() + dbAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
+            }
+            createWithdrawals(withdrawal, accountId);
+//            withdrawalService.getWithdrawal(withdrawalId).get().setId(withdrawalId);
             return new ResponseEntity<>(HttpStatus.OK);
         }
+
         if(dbAmount > bodyAmount){
-            newBalance = balance + (dbAmount - bodyAmount);
-            accountRepository.findById(accountId).get().setBalance(newBalance);
+            if(withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("balance")){
+                newBalance = balance + (dbAmount - bodyAmount);
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")){
+                newRewards = rewards + (dbAmount.intValue() - bodyAmount.intValue());
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
         }
         if(dbAmount < bodyAmount){
-            newBalance = balance - (bodyAmount - dbAmount);
-            accountRepository.findById(accountId).get().setBalance(newBalance);
+            if(withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("balance")){
+                newBalance = balance - (bodyAmount - dbAmount);
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")){
+                newRewards = rewards - (bodyAmount.intValue() - dbAmount.intValue());
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
         }
-        Withdrawal w = withdrawalService.createWithdrawal(withdrawal);
+//        withdrawalService.delete(withdrawalId);
+        withdrawalService.createWithdrawal(withdrawal);
+//        withdrawalService.getWithdrawal(withdrawalId).get().setId(withdrawalId);
+//        deleteWithdrawal(withdrawalId);
+//        createWithdrawals(withdrawal, accountId);
+
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @DeleteMapping(value="/withdrawals/{withdrawalId}")
-    public ResponseEntity<?> deleteWithdrawal(@PathVariable Long withdrawalId) {
+    public void deleteWithdrawal(@PathVariable Long withdrawalId) {
         verifyWithdrawalExists(withdrawalId);
-        withdrawalService.delete(withdrawalId);
         Long accountId = withdrawalService.getWithdrawal(withdrawalId).get().getPayer_id();
         Double withdrawal = withdrawalService.getWithdrawal(withdrawalId).get().getAmount();
         if (withdrawalService.getWithdrawal(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
@@ -136,6 +194,7 @@ public class WithdrawalController {
             Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() + withdrawal.intValue();
             accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        withdrawalService.delete(withdrawalId);
+        new ResponseEntity<>(HttpStatus.OK);
     }
 }
