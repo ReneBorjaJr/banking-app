@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @Validated
 public class BillController {
@@ -123,8 +124,6 @@ public class BillController {
         return billService.deleteABill(billId);
 
     }
-
-
 
 
 

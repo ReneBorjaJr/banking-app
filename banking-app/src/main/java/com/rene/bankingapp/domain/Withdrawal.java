@@ -12,7 +12,7 @@ public class Withdrawal {
     @Id
     @GeneratedValue
     private Long id;
-    @NotEmpty
+    @NotNull
     private TransactionType type;
     @NotEmpty
     private String transaction_Date;
@@ -93,10 +93,5 @@ public class Withdrawal {
     public String toString(){
         return description;
     }
-
-
-
-
-
 
 }
