@@ -29,7 +29,7 @@ public class WithdrawalService {
     private AccountRepository accountRepository;
 
 
-    public ResponseEntity<?> createWithdrawal(Withdrawal withdrawal, Long accountId) {
+    public void createWithdrawal(Withdrawal withdrawal, Long accountId) {
         verifyAccountExists(accountId);
         verifyNotDeposit(withdrawal.getType());
         verifySufficientFunds(accountId, withdrawal.getAmount());
@@ -46,25 +46,11 @@ public class WithdrawalService {
             }
         }
         withdrawal = withdrawalRepository.save(withdrawal);
-        ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
-        List<Withdrawal> listOfWithdrawals = new ArrayList<>();
-        listOfWithdrawals.add(withdrawal);
-        successfulResponse.setCode(HttpStatus.CREATED.value());
-        successfulResponse.setMessage("Withdrawal successful");
-        successfulResponse.setData(listOfWithdrawals);
-        return new ResponseEntity<>(successfulResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getAllWithdrawalsByAccountId(Long accountId) {
+    public Iterable<Withdrawal> getAllWithdrawalsByAccountId(Long accountId) {
         verifyAccountExists(accountId);
-        Iterable<Withdrawal> withdrawals = withdrawalRepository.findAll();
-        List<Withdrawal> listOfWithdrawals = new ArrayList<>();
-        withdrawals.forEach(listOfWithdrawals::add);
-        ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
-        successfulResponse.setCode(HttpStatus.OK.value());
-        successfulResponse.setMessage("All withdrawals retrieved successfully");
-        successfulResponse.setData(listOfWithdrawals);
-        return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+        return withdrawalRepository.findAll();
     }
 
 
@@ -80,7 +66,7 @@ public class WithdrawalService {
         return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateWithdrawal(Withdrawal withdrawal, Long withdrawalId) {
+    public void updateWithdrawal(Withdrawal withdrawal, Long withdrawalId) {
         Double dbAmount = withdrawalRepository.findById(withdrawalId).get().getAmount();
         Double bodyAmount = withdrawal.getAmount();
         Long accountId = withdrawalRepository.findById(withdrawalId).get().getPayer_id();
@@ -96,30 +82,29 @@ public class WithdrawalService {
         verifyWithdrawalExists(withdrawalId);
         verifySufficientFunds(accountId, withdrawal.getAmount());
 
-        if (!bodyStatus.equalsIgnoreCase(dbStatus)) {
-            if (bodyStatus.equalsIgnoreCase("pending")) {
-                if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
-                    newBalance = balance + dbAmount;
+        if(dbMedium.equalsIgnoreCase(bodyMedium) && bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("executed")){
+            if (dbAmount > bodyAmount) {
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance + (dbAmount - bodyAmount);
                     accountRepository.findById(accountId).get().setBalance(newBalance);
                 }
-                if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
-                    newRewards = rewards + dbAmount.intValue();
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards + (dbAmount.intValue() - bodyAmount.intValue());
                     accountRepository.findById(accountId).get().setRewards(newRewards);
                 }
             }
-            if (bodyStatus.equalsIgnoreCase("executed")) {
-                if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
-                    newBalance = balance - bodyAmount;
+            if (dbAmount < bodyAmount) {
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance - (bodyAmount - dbAmount);
                     accountRepository.findById(accountId).get().setBalance(newBalance);
                 }
-                if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
-                    newRewards = rewards - bodyAmount.intValue();
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards - (bodyAmount.intValue() - dbAmount.intValue());
                     accountRepository.findById(accountId).get().setRewards(newRewards);
                 }
             }
         }
-
-        if (!dbMedium.equalsIgnoreCase(bodyMedium)) {
+        if(!dbMedium.equalsIgnoreCase(bodyMedium) && bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("executed")){
             if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
                 Double newAccountBalance = accountRepository.findById(accountId).get().getBalance() + dbAmount;
                 accountRepository.findById(accountId).get().setBalance(newAccountBalance);
@@ -128,55 +113,90 @@ public class WithdrawalService {
                 Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() + dbAmount.intValue();
                 accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
             }
-//            createWithdrawal(withdrawal, accountId);
-            withdrawal = withdrawalRepository.save(withdrawal);
-            ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
-            List<Withdrawal> listOfWithdrawals = new ArrayList<>();
-            listOfWithdrawals.add(withdrawal);
-            successfulResponse.setCode(HttpStatus.OK.value());
-            successfulResponse.setMessage("Withdrawal updated");
-            successfulResponse.setData(listOfWithdrawals);
-            return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
-//            withdrawalService.getWithdrawal(withdrawalId).get().setId(withdrawalId);
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                newRewards = rewards - bodyAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                newBalance = balance - bodyAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+        }
+        if(dbMedium.equalsIgnoreCase(bodyMedium) && !bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("executed")){
+            if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                newBalance = balance - bodyAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                newRewards = rewards - bodyAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+            if (dbAmount > bodyAmount) {
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance + (dbAmount - bodyAmount);
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards + (dbAmount.intValue() - bodyAmount.intValue());
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
+            if (dbAmount < bodyAmount) {
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                    newBalance = balance - (bodyAmount - dbAmount);
+                    accountRepository.findById(accountId).get().setBalance(newBalance);
+                }
+                if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                    newRewards = rewards - (bodyAmount.intValue() - dbAmount.intValue());
+                    accountRepository.findById(accountId).get().setRewards(newRewards);
+                }
+            }
+        }
+        if(!dbMedium.equalsIgnoreCase(bodyMedium) && !bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("executed")){
+            if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                newBalance = balance - bodyAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                newRewards = rewards - bodyAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
+                newRewards = rewards - bodyAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
+                newBalance = balance - bodyAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+        }
+        if(dbMedium.equalsIgnoreCase(bodyMedium) && !bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("pending")){
+            if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                newBalance = balance + dbAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
+            if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                newRewards = rewards + dbAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+        }
+        if(!dbMedium.equalsIgnoreCase(bodyMedium) && !bodyStatus.equalsIgnoreCase(dbStatus) && bodyStatus.equalsIgnoreCase("pending")){
+            if (withdrawal.getMedium().equalsIgnoreCase("balance")) {
+                newRewards = rewards + dbAmount.intValue();
+                accountRepository.findById(accountId).get().setRewards(newRewards);
+            }
+            if (withdrawal.getMedium().equalsIgnoreCase("rewards")) {
+                newBalance = balance + dbAmount;
+                accountRepository.findById(accountId).get().setBalance(newBalance);
+            }
         }
 
-        if (dbAmount > bodyAmount) {
-            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
-                newBalance = balance + (dbAmount - bodyAmount);
-                accountRepository.findById(accountId).get().setBalance(newBalance);
-            }
-            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
-                newRewards = rewards + (dbAmount.intValue() - bodyAmount.intValue());
-                accountRepository.findById(accountId).get().setRewards(newRewards);
-            }
-        }
-        if (dbAmount < bodyAmount) {
-            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
-                newBalance = balance - (bodyAmount - dbAmount);
-                accountRepository.findById(accountId).get().setBalance(newBalance);
-            }
-            if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("rewards")) {
-                newRewards = rewards - (bodyAmount.intValue() - dbAmount.intValue());
-                accountRepository.findById(accountId).get().setRewards(newRewards);
-            }
-        }
-//        withdrawalService.delete(withdrawalId);
-//        withdrawalService.createWithdrawal(withdrawal);
         withdrawal = withdrawalRepository.save(withdrawal);
-        ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
-        successfulResponse.setCode(HttpStatus.OK.value());
-        successfulResponse.setMessage("Updated withdrawal successfully");
-        List<Withdrawal> listOfWithdrawal = new ArrayList<>();
-        listOfWithdrawal.add(withdrawal);
-        successfulResponse.setData(listOfWithdrawal);
-        return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
-
     }
 
 
-    public ResponseEntity<?> deleteWithdrawal(Long withdrawalId) {
+    public void deleteWithdrawal(Long withdrawalId) {
         verifyWithdrawalExists(withdrawalId);
-        withdrawalRepository.deleteById(withdrawalId);
         Long accountId = withdrawalRepository.findById(withdrawalId).get().getPayer_id();
         Double withdrawal = withdrawalRepository.findById(withdrawalId).get().getAmount();
         if (withdrawalRepository.findById(withdrawalId).get().getMedium().equalsIgnoreCase("balance")) {
@@ -187,10 +207,7 @@ public class WithdrawalService {
             Integer newRewardsBalance = accountRepository.findById(accountId).get().getRewards() + withdrawal.intValue();
             accountRepository.findById(accountId).get().setRewards(newRewardsBalance);
         }
-        ApiResponse<Withdrawal> successfulResponse = new ApiResponse<>();
-        successfulResponse.setCode(HttpStatus.OK.value());
-        successfulResponse.setMessage("Withdrawal with id: " + withdrawalId + " successfully deleted");
-        return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+        withdrawalRepository.deleteById(withdrawalId);
     }
 
 
@@ -200,6 +217,7 @@ public class WithdrawalService {
             throw new ResourceNotFoundException("Account with Id: " + accountId + " not found.");
         }
     }
+
 
     public void verifyNotDeposit(TransactionType transactionType) {
         if (transactionType.equals(TransactionType.DEPOSIT)) {

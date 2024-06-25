@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Withdrawal {
@@ -16,15 +17,16 @@ public class Withdrawal {
     private Long id;
     @NotNull
     private TransactionType type;
-//    @NotEmpty
+    @NotEmpty
     private String transaction_Date = "2017-07-25";
-//    @NotEmpty
+    @NotEmpty
     private String status;
-//    @NotNull
+    @NotNull
     private Long payer_id;
-//    @NotNull
+    @NotEmpty
     private String medium;
     @NotNull
+    @Positive
     private Double amount;
     private String description;
 
