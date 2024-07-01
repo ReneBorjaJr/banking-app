@@ -2,6 +2,7 @@ package com.rene.bankingapp.service;
 
 import com.rene.bankingapp.domain.Account;
 import com.rene.bankingapp.domain.Customer;
+import com.rene.bankingapp.exceptions.InternalServerErrorException;
 import com.rene.bankingapp.exceptions.ResourceNotFoundException;
 import com.rene.bankingapp.repository.AccountRepository;
 import com.rene.bankingapp.repository.CustomerRepository;
@@ -61,36 +62,52 @@ public class AccountService {
         Optional<Account> account = accountRepository.findById(accountId);
         if (account.isEmpty()) {
             throw new ResourceNotFoundException("Account with ID " + accountId + " Does not exits ");
+        } else {
+            System.out.println("Account with ID " + accountId + " exits ");
         }
     }
 
+
     public ResponseEntity<?> getAccountById(Long accountId) {
         verifyAccount(accountId);
-        ApiResponse<Account> successfulResponse = new ApiResponse<>();
-        successfulResponse.setCode(HttpStatus.OK.value());
-        successfulResponse.setMessage("Successfully fetched account");
-        Optional<Account> account = accountRepository.findById(accountId);
-        List<Account> listOfAccounts = new ArrayList<>();
-        Account myAccount = account.get();
-        listOfAccounts.add(myAccount);
-        successfulResponse.setData(listOfAccounts);
-        return new ResponseEntity<>(successfulResponse, HttpStatus.OK);
+        ApiResponse<Account> response = new ApiResponse<>();
+
+        Optional<Account> accountOptional = accountRepository.findById(accountId);
+        if (accountOptional.isPresent()) {
+            Account account = accountOptional.get();
+            response.setCode(HttpStatus.OK.value());
+            response.setMessage("Successfully fetched account");
+            List<Account> listOfAccounts = new ArrayList<>();
+            listOfAccounts.add(account);
+            response.setData(listOfAccounts);
+        } else {
+            response.setCode(HttpStatus.NOT_FOUND.value());
+            response.setMessage("Unable to fetch account");
+            response.setData(null);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
     public ResponseEntity<?> createAccount(Account account, Long customerId) {
         verifyCustomer(customerId);
-        account = accountRepository.save(account);
+        verifyAccountIdMatchesCustomerId(customerId, account);
+        try {
+            account = accountRepository.save(account);
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Failed to create account", e);
+        }
         ApiResponse<Account> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.CREATED.value());
-        successfulResponse.setMessage("Account created");
+        successfulResponse.setMessage("Account created successfully");
         List<Account> newAccount = new ArrayList<>();
         newAccount.add(account);
         successfulResponse.setData(newAccount);
         return new ResponseEntity<>(successfulResponse, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> updateAccount(Account account, Long pollId) {
-        verifyAccount(pollId);
+    public ResponseEntity<?> updateAccount(Account account, Long accountId) {
+        verifyAccount(accountId);
         account = accountRepository.save(account);
         ApiResponse<Account> successfulResponse = new ApiResponse<>();
         successfulResponse.setCode(HttpStatus.OK.value());
@@ -102,12 +119,19 @@ public class AccountService {
     }
 
     public ResponseEntity<?> deleteAccount(Long accountId) {
-        verifyAccount(accountId);
-        ApiResponse<?> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(HttpStatus.OK.value());
-        apiResponse.setMessage("Account successfully deleted");
-        accountRepository.deleteById(accountId);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        try {
+            verifyAccount(accountId);
+            ApiResponse<?> apiResponse = new ApiResponse<>();
+            apiResponse.setCode(HttpStatus.OK.value());
+            apiResponse.setMessage("Account successfully deleted");
+            accountRepository.deleteById(accountId);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        } catch (Exception e) {
+            ApiResponse<?> apiResponse = new ApiResponse<>();
+            apiResponse.setCode(HttpStatus.NOT_FOUND.value());
+            apiResponse.setMessage("Account not found");
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        }
     }
 
     public ResponseEntity<?> getAllAccountsForCustomer(Long customerId) {
@@ -130,6 +154,12 @@ public class AccountService {
         Optional<Customer> customer = customerRepository.findById(customerId);
         if(customer.isEmpty()) {
             throw new ResourceNotFoundException("Customer with id " + customerId + " not found");
+        }
+    }
+
+    private void verifyAccountIdMatchesCustomerId(Long customerId, Account account) {
+        if (!customerId.equals(account.getCustomerId())) {
+            throw new ResourceNotFoundException("Customer id: " + customerId + " does not match the entered customer id: " + account.getCustomerId());
         }
     }
 }

@@ -1,28 +1,32 @@
 package com.rene.bankingapp.domain;
 
 import com.rene.bankingapp.domain.enums.TransactionType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 public class Withdrawal {
     @Id
     @GeneratedValue
+    @NotNull
     private Long id;
-    @NotEmpty
+    @NotNull
     private TransactionType type;
     @NotEmpty
-    private String transaction_Date;
+    private String transaction_Date = "2017-07-25";
     @NotEmpty
     private String status;
     @NotNull
     private Long payer_id;
-    @NotNull
+    @NotEmpty
     private String medium;
     @NotNull
+    @Positive
     private Double amount;
     private String description;
 
@@ -93,10 +97,5 @@ public class Withdrawal {
     public String toString(){
         return description;
     }
-
-
-
-
-
 
 }
